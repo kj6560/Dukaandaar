@@ -63,7 +63,6 @@ class AuthController extends Controller
     {
         $user = OauthAccessTokens::where('user_id', $request->user_id)->first();
         if (!empty($user->user_id)) {
-            $user_in = User::where('id', $request->user_id)->first();
             $user->delete();
             return response()->json(['success' => true], 200);
         } else {
