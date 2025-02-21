@@ -17,10 +17,10 @@ class ProductController extends Controller
             'sku' => 'required'
         ]);
         $product = Product::where('org_id', $request->org_id)->where('sku', $request->sku)->first();
-        if ($product) {
-            return response()->json(['statusCode' => 400, 'message' => 'Product already exists', 'data' => []], 400);
+        if (empty($product)) {
+            $product = new Product();
         }
-        $product = new Product();
+
         $product->org_id = $request->org_id;
         $product->name = $request->name;
         $product->product_mrp = $request->product_mrp;
@@ -41,10 +41,10 @@ class ProductController extends Controller
         $request->validate([
             'org_id' => 'required',
         ]);
-        if (empty($request->id)) {
+        if (empty($request->sku)) {
             $products = Product::where('org_id', $request->org_id)->get();
         } else {
-            $products = Product::where('org_id', $request->org_id)->where('id', $request->id)->first();
+            $products = Product::where('org_id', $request->org_id)->where('sku', $request->sku)->first();
         }
 
         if ($products) {
@@ -55,6 +55,24 @@ class ProductController extends Controller
             ], 200);
         } else {
             return response()->json(['statusCode' => 400, 'message' => 'Products not found', 'data' => []], 400);
+        }
+    }
+    public function deleteProduct(Request $request)
+    {
+        $request->validate([
+            'org_id' => 'required',
+            'sku' => 'required'
+        ]);
+        $product = Product::where('org_id', $request->org_id)->where('sku', $request->sku)->first();
+        if ($product) {
+            $product->delete();
+            return response()->json([
+                'statusCode' => 200,
+                'message' => 'Product deleted successfully',
+                'data' => $product,
+            ], 200);
+        } else {
+            return response()->json(['statusCode' => 400, 'message' => 'Product not found', 'data' => []], 400);
         }
     }
 }

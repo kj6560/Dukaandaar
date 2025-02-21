@@ -13,8 +13,12 @@ Route::get('/registerOrg', [OrgController::class, 'register']);
 Route::get('/registerUser', [AuthController::class, 'register']);
 Route::get('/logout', [AuthController::class, 'logout']);
 Route::middleware('auth:api')->group(function () {
+    //Inventory
     Route::get('/fetchInventory', [InventoryController::class, 'list']);
+    Route::post('/updateInventory', [InventoryController::class, 'updateInventory']);
+
+    //Product
     Route::post('/addProduct', [ProductController::class, 'addProduct']);
     Route::get('/fetchProducts', [ProductController::class, 'fetchProducts']);
-    Route::post('/updateInventory', [InventoryController::class, 'updateInventory']);
+    Route::get('/deleteProduct', [ProductController::class, 'deleteProduct']);
 });
