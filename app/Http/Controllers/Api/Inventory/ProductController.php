@@ -23,7 +23,7 @@ class ProductController extends Controller
 
         $product->org_id = $request->org_id;
         $product->name = $request->name;
-        $product->product_mrp = $request->product_mrp;
+        $product->product_mrp = doubleval($request->product_mrp);
         $product->sku = $request->sku;
         $product->is_active = 1;
         if ($product->save()) {
