@@ -21,7 +21,9 @@ class InventoryController extends Controller
         }
         $inventory = Inventory::join('products', 'products.id', '=', 'inventory.product_id')
             ->select(
+
                 'inventory.id',
+                'inventory.org_id',
                 'inventory.product_id',
                 'inventory.quantity',
                 'inventory.balance_quantity',
@@ -60,7 +62,6 @@ class InventoryController extends Controller
                 } else if ($request->transaction_type == 'adjustment') {
                     $inventory->balance_quantity = $request->quantity;
                 }
-                
             } else {
                 $inventory = new Inventory();
                 $inventory->balance_quantity = $request->quantity;
