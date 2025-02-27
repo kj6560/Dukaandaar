@@ -136,7 +136,7 @@ class OrderController extends Controller
 
                 $orderDetail->order_id = $order->id;
                 $orderDetail->product_id = $product->id;
-                $orderDetail->base_price = $order_detail['base_price'];
+                $orderDetail->base_price = $product->product_mrp;
                 $orderDetail->discount = $order_detail['discount'];
                 $orderDetail->tax = $order_detail['tax'];
                 $orderDetail->net_price = $order_detail['net_price'];
