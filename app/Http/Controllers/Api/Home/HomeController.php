@@ -17,9 +17,9 @@ class HomeController extends Controller
             'status' => 'success',
             'data' => [
                 "sales" => [
-                    'sales_today' => Orders::select(DB::raw("sum(orders.net_total) as sales_today"))->where('created_at', '>=', date('Y-m-d 00:00:00'))->first()->sales_today,
-                    'sales_this_month' => Orders::select(DB::raw("sum(orders.net_total) as sales_this_month"))->where('created_at', '>=', date('Y-m-01 00:00:00'))->first()->sales_this_month,
-                    'sales_total' => Orders::select(DB::raw("sum(orders.net_total) as sales_total"))->first()->sales_total
+                    'sales_today' => Orders::select(DB::raw("sum(orders.net_total) as sales_today"))->where('created_at', '>=', date('Y-m-d 00:00:00'))->first()->sales_today??"0",
+                    'sales_this_month' => Orders::select(DB::raw("sum(orders.net_total) as sales_this_month"))->where('created_at', '>=', date('Y-m-01 00:00:00'))->first()->sales_this_month??"0",
+                    'sales_total' => Orders::select(DB::raw("sum(orders.net_total) as sales_total"))->first()->sales_total??"0"
                     
                 ],
                 "inventory" => [
