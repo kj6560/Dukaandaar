@@ -139,15 +139,58 @@ class OrderController extends Controller
                 $orderDetail->base_price = $product->product_mrp;
                 $orderDetail->discount = $order_detail['discount'];
                 $orderDetail->tax = $order_detail['tax'];
-                $orderDetail->net_price = $product->product_mrp * $order_detail['quantity'] - $order_detail['discount'] +$order_detail['tax'];
+                $orderDetail->net_price = $product->product_mrp * $order_detail['quantity'] - $order_detail['discount'] + $order_detail['tax'];
                 $orderDetail->quantity = $order_detail['quantity'];
                 $orderDetail->save();
             }
         }
+        $orders = Orders::join('order_details as ord', 'ord.order_id', '=', 'orders.id')
+            ->join('products as p', 'p.id', '=', 'ord.product_id')
+            ->where('orders.org_id', $request->org_id)
+            ->groupBy(
+                'orders.id',
+                'orders.org_id',
+                'orders.order_date',
+                'orders.total_order_value',
+                'orders.total_order_discount',
+                'orders.net_order_value',
+                'orders.order_status',
+                'orders.tax',
+                'orders.net_total',
+                'orders.created_by'
+            )
+            ->select(
+                'orders.id as order_id',
+                'orders.org_id',
+                'orders.order_date',
+                'orders.total_order_value',
+                'orders.total_order_discount',
+                'orders.net_order_value',
+                'orders.order_status',
+                'orders.tax',
+                'orders.net_total',
+                'orders.created_by',
+                DB::raw('
+                JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        "order_detail_id", ord.id,
+                        "product_id", ord.product_id,
+                        "base_price", ord.base_price,
+                        "discount", ord.discount,
+                        "tax", ord.tax,
+                        "net_price", ord.net_price,
+                        "product_name", p.name
+                    )
+                ) as order_details
+            ')
+            )
+            ->where('orders.id', $order->id)
+            ->first();
+        $orders = json_decode($orders->order_details);
         return response()->json([
             'statusCode' => 200,
             'message' => 'Order updated successfully',
-            'data' => $order
+            'data' => $orders
         ]);
     }
 }
