@@ -186,7 +186,7 @@ class OrderController extends Controller
             )
             ->where('orders.id', $order->id)
             ->first();
-        $orders = json_decode($orders->order_details);
+        $orders->order_details = json_encode($orders->order_details);
         return response()->json([
             'statusCode' => 200,
             'message' => 'Order updated successfully',
