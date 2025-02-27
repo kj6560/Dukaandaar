@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Auth\OrgController;
 use App\Http\Controllers\Api\Home\HomeController;
 use App\Http\Controllers\Api\Inventory\InventoryController;
 use App\Http\Controllers\Api\Inventory\ProductController;
+use App\Http\Controllers\Api\Orders\OrderController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -24,4 +25,8 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/addProduct', [ProductController::class, 'addProduct']);
     Route::get('/fetchProducts', [ProductController::class, 'fetchProducts']);
     Route::get('/deleteProduct', [ProductController::class, 'deleteProduct']);
+
+    //orders
+    Route::get('/fetchOrders', [OrderController::class, 'fetchOrders']);
+    Route::post('/updateOrder', [OrderController::class, 'updateOrder']);
 });

@@ -50,24 +50,18 @@ class InventoryController extends Controller
             'org_id' => 'required'
         ]);
         $product = Product::where('sku', $request->sku)->first();
-        if (!empty($request->id)) {
-            $inventory = Inventory::find($request->id);
-            if (!empty($inventory->id)) {
-                $old_quantity = $inventory->balance_quantity;
-                if (!empty($inventory->balance_quantity)) {
-                    $inventory->old_quantity = $old_quantity;
-                }
-                if ($request->transaction_type == 'purchase') {
-                    $inventory->balance_quantity = $inventory->balance_quantity + $request->quantity;
-                } else if ($request->transaction_type == 'sale') {
-                    $inventory->balance_quantity = $inventory->balance_quantity - $request->quantity;
-                } else if ($request->transaction_type == 'adjustment') {
-                    $inventory->balance_quantity = $request->quantity;
-                }
-            } else {
-                $inventory = new Inventory();
+        $inventory = Inventory::where('product_id', $product->id)->first();
+        if (!empty($inventory->id)) {
+            $old_quantity = $inventory->balance_quantity;
+            if (!empty($inventory->balance_quantity)) {
+                $inventory->old_quantity = $old_quantity;
+            }
+            if ($request->transaction_type == 'purchase') {
+                $inventory->balance_quantity = $inventory->balance_quantity + $request->quantity;
+            } else if ($request->transaction_type == 'sale') {
+                $inventory->balance_quantity = $inventory->balance_quantity - $request->quantity;
+            } else if ($request->transaction_type == 'adjustment') {
                 $inventory->balance_quantity = $request->quantity;
-                $inventory->is_active = 1;
             }
         } else {
             $inventory = new Inventory();
