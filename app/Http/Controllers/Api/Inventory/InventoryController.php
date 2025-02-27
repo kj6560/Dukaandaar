@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Inventory;
 use App\Http\Controllers\Controller;
 use App\Models\Inventory;
 use App\Models\InventoryTransaction;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -45,9 +46,10 @@ class InventoryController extends Controller
         $request->validate([
             'quantity' => 'required',
             'transaction_type' => 'required',
-            'product_id' => 'required',
+            'sku' => 'required',
             'org_id' => 'required'
         ]);
+        $product = Product::where('sku', $request->sku)->first();
         if (!empty($request->id)) {
             $inventory = Inventory::find($request->id);
             if (!empty($inventory->id)) {
@@ -73,7 +75,7 @@ class InventoryController extends Controller
             $inventory->is_active = 1;
         }
         $inventory->org_id = $request->org_id;
-        $inventory->product_id = $request->product_id;
+        $inventory->product_id = $product->id;
         $inventory->quantity = $request->quantity;
         if ($inventory->save()) {
             $transaction = new InventoryTransaction();
