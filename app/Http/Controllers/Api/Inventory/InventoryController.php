@@ -83,6 +83,7 @@ class InventoryController extends Controller
             $transaction->transaction_type = $request->transaction_type;
             $transaction->transaction_by = Auth::user()->id;
             if ($transaction->save()) {
+                $inventory->name = $product->name;
                 return response()->json([
                     'statusCode' => 200,
                     'message' => 'Inventory updated successfully',
