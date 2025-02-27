@@ -7,6 +7,7 @@ use App\Models\Inventory;
 use App\Models\Orders;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
@@ -16,9 +17,9 @@ class HomeController extends Controller
             'status' => 'success',
             'data' => [
                 "sales" => [
-                    'sales_today' => Orders::where('created_at', '>=', date('Y-m-d 00:00:00'))->count(),
-                    'sales_this_month' => Orders::where('created_at', '>=', date('Y-m-01 00:00:00'))->count(),
-                    'sales_total' => Orders::count()
+                    'sales_today' => Orders::select(DB::raw("sum(orders.net_total) as sales_today"))->where('created_at', '>=', date('Y-m-d 00:00:00'))->first()->sales_today,
+                    'sales_this_month' => Orders::select(DB::raw("sum(orders.net_total) as sales_this_month"))->where('created_at', '>=', date('Y-m-01 00:00:00'))->first()->sales_this_month,
+                    'sales_total' => Orders::select(DB::raw("sum(orders.net_total) as sales_total"))->first()->sales_total
                     
                 ],
                 "inventory" => [
