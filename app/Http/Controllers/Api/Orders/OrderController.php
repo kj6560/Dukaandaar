@@ -139,7 +139,7 @@ class OrderController extends Controller
                 $orderDetail->base_price = $product->product_mrp;
                 $orderDetail->discount = $order_detail['discount'];
                 $orderDetail->tax = $order_detail['tax'];
-                $orderDetail->net_price = $order_detail['net_price'];
+                $orderDetail->net_price = $product->product_mrp * $order_detail['quantity'] - $order_detail['discount'] +$order_detail['tax'];
                 $orderDetail->quantity = $order_detail['quantity'];
                 $orderDetail->save();
             }
