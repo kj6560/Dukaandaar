@@ -7,6 +7,7 @@ use App\Models\OrderDetails;
 use App\Models\Orders;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -17,11 +18,25 @@ class OrderController extends Controller
         ]);
 
         $org_id = $request->org_id;
+
         $orders = Orders::join('order_details as ord', 'ord.order_id', '=', 'orders.id')
             ->join('products as p', 'p.id', '=', 'ord.product_id')
             ->where('orders.org_id', $org_id)
+            ->groupBy(
+                'orders.id',
+                'orders.org_id',
+                'orders.order_date',
+                'orders.total_order_value',
+                'orders.total_order_discount',
+                'orders.net_order_value',
+                'orders.order_status',
+                'orders.tax',
+                'orders.net_total',
+                'orders.created_by'
+            )
             ->select(
                 'orders.id as order_id',
+                'orders.org_id',
                 'orders.order_date',
                 'orders.total_order_value',
                 'orders.total_order_discount',
@@ -30,22 +45,31 @@ class OrderController extends Controller
                 'orders.tax',
                 'orders.net_total',
                 'orders.created_by',
-                'ord.id as order_detail_id',
-                'ord.product_id',
-                'ord.base_price',
-                'ord.discount',
-                'ord.tax as product_tax',
-                'ord.net_price',
-                'p.name as product_name'
+                DB::raw('
+                JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        "order_detail_id", ord.id,
+                        "product_id", ord.product_id,
+                        "base_price", ord.base_price,
+                        "discount", ord.discount,
+                        "tax", ord.tax,
+                        "net_price", ord.net_price,
+                        "product_name", p.name
+                    )
+                ) as order_details
+            ')
             )
-            ->get()
-            ->groupBy('order_id'); // Grouping by order_id
+            ->get();
+        foreach($orders as $order){
+            $order = json_decode($order->order_details);
+        }
         return response()->json([
             'statusCode' => 200,
-            'message' => 'orders fetched successfully',
+            'message' => 'Orders fetched successfully',
             'data' => $orders
         ]);
     }
+
     public function updateOrder(Request $request)
     {
         $request->validate([
@@ -76,7 +100,7 @@ class OrderController extends Controller
         if ($order->save()) {
             $details = $request->details;
             foreach ($details as $order_detail) {
-                
+
                 $product = Product::where('sku', $order_detail['sku'])->first();
 
                 if (empty($product->id)) {
