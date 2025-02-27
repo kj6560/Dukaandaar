@@ -60,7 +60,7 @@ class OrderController extends Controller
             ')
             )
             ->get();
-        foreach($orders as $order){
+        foreach ($orders as $order) {
             $order = json_decode($order->order_details);
         }
         return response()->json([
@@ -74,32 +74,53 @@ class OrderController extends Controller
     {
         $request->validate([
             'org_id' => 'required',
-            'order_date' => 'required',
-            'total_order_value' => 'required',
-            'total_order_discount' => 'required',
-            'net_order_value' => 'required',
-            'order_status' => 'required',
-            'tax' => 'required',
-            'net_total' => 'required',
-            'created_by' => 'required'
+            'order' => 'required',
+            'created_by' => 'required',
         ]);
+        $order = $request->order;
+        if (!is_array($order) || empty($order)) {
+            return response()->json([
+                'statusCode' => 400,
+                'message' => 'Order details are required',
+                'data' => []
+            ]);
+        }
+
         if (!empty($request->order_id)) {
             $order = Orders::find($request->order_id);
         } else {
             $order = new Orders();
         }
+        $total_order_value = 0;
+        $total_order_discount = 0;
+        $net_order_value = 0;
+        $tax = 0;
+        $net_total = 0;
+
+        foreach ($request->order as $order_detail) {
+            $product = Product::where('sku', $order_detail['sku'])->first();
+            if (empty($product->id)) {
+                continue;
+            }
+            $total_order_value += $product->product_mrp * $order_detail['quantity'];
+            $total_order_discount += $order_detail['discount'];
+            $net_order_value += $product->product_mrp * $order_detail['quantity'] - $order_detail['discount'];
+            $tax += $order_detail['tax'];
+            $net_total += $net_order_value + $tax;
+        }
         $order->org_id = $request->org_id;
-        $order->order_date = $request->order_date;
-        $order->total_order_value = $request->total_order_value;
-        $order->total_order_discount = $request->total_order_discount;
-        $order->net_order_value = $request->net_order_value;
-        $order->tax = $request->tax;
-        $order->net_total = $request->net_total;
+        $order->order_date = date('Y-m-d H:i:s');
+        $order->total_order_value = $total_order_value;
+        $order->total_order_discount = $total_order_discount;
+        $order->net_order_value = $net_order_value;
+        $order->tax = $tax;
+        $order->net_total = $net_total;
         $order->created_by = $request->created_by;
         $order->order_status = $request->order_status;
+        $order->save();
+
         if ($order->save()) {
-            $details = $request->details;
-            foreach ($details as $order_detail) {
+            foreach ($request->order as $order_detail) {
 
                 $product = Product::where('sku', $order_detail['sku'])->first();
 
