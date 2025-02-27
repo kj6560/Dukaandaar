@@ -116,7 +116,7 @@ class OrderController extends Controller
         $order->tax = $tax;
         $order->net_total = $net_total;
         $order->created_by = $request->created_by;
-        $order->order_status = $request->order_status;
+        $order->order_status = 1;
         $order->save();
 
         if ($order->save()) {
