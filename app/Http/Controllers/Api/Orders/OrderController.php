@@ -58,11 +58,18 @@ class OrderController extends Controller
                     )
                 ) as order_details
             ')
-            )
-            ->get();
-        foreach ($orders as $order) {
-            $order = json_decode($order->order_details);
-        }
+            );
+
+            if(!empty($request->order_id)){
+                $orders = $orders->where('orders.id', $request->order_id)->first();
+                $orders = json_decode($orders->order_details);
+            }else{
+                $orders = $orders->get();
+                foreach ($orders as $order) {
+                    $order = json_decode($order->order_details);
+                }
+            }
+        
         return response()->json([
             'statusCode' => 200,
             'message' => 'Orders fetched successfully',
