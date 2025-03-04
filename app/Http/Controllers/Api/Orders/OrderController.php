@@ -62,7 +62,7 @@ class OrderController extends Controller
 
             if(!empty($request->order_id)){
                 $orders = $orders->where('orders.id', $request->order_id)->first();
-                $orders = json_decode($orders->order_details);
+                $orders->order_details = json_decode($orders->order_details);
             }else{
                 $orders = $orders->get();
                 foreach ($orders as $order) {
