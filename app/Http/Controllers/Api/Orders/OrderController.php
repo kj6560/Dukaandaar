@@ -54,6 +54,7 @@ class OrderController extends Controller
                         "discount", ord.discount,
                         "tax", ord.tax,
                         "net_price", ord.net_price,
+                        "quantity", ord.quantity,
                         "product_name", p.name
                     )
                 ) as order_details
