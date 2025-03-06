@@ -32,7 +32,11 @@ class InventoryController extends Controller
                 'products.product_mrp',
                 'inventory.is_active'
             )
-            ->where('inventory.org_id', $request->org_id)->get();
+            ->where('inventory.org_id', $request->org_id);
+        if(!empty($request->id)){
+            $inventory = $inventory->where('inventory.id', $request->id);
+        }
+        $inventory = $inventory->get();
         return response()->json(
             [
                 'statusCode' => 200,
