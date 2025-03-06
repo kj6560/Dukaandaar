@@ -41,10 +41,10 @@ class ProductController extends Controller
         $request->validate([
             'org_id' => 'required',
         ]);
-        if (empty($request->sku)) {
+        if (empty($request->id)) {
             $products = Product::where('org_id', $request->org_id)->get();
         } else {
-            $products = Product::where('org_id', $request->org_id)->where('sku', $request->sku)->first();
+            $products = Product::where('org_id', $request->org_id)->where('id', $request->product_id)->first();
         }
 
         if ($products) {

@@ -20,26 +20,17 @@ class InventoryController extends Controller
                 'data' => []
             ]);
         }
-        $inventory = Inventory::join('products', 'products.id', '=', 'inventory.product_id')
-            ->select(
+        $inventory = Inventory::with(['transactions' => function ($query) {
+            $query->orderBy('created_at', 'desc');
+        }, 'product', 'transactions.user'])
+            ->where('org_id', $request->org_id);
 
-                'inventory.id',
-                'inventory.org_id',
-                'inventory.product_id',
-                'inventory.quantity',
-                'inventory.balance_quantity',
-                'products.name',
-                'products.product_mrp',
-                'inventory.is_active'
-            )
-            ->where('inventory.org_id', $request->org_id);
-        if(!empty($request->inventory_id)){
-            $inventory = $inventory->where('inventory.id', $request->inventory_id);
-            $inventory = $inventory->first();
-        }else{
+        if (!empty($request->inventory_id)) {
+            $inventory = $inventory->where('id', $request->inventory_id)->first();
+        } else {
             $inventory = $inventory->get();
         }
-        
+
         return response()->json(
             [
                 'statusCode' => 200,
@@ -82,6 +73,7 @@ class InventoryController extends Controller
             $transaction = new InventoryTransaction();
             $transaction->inventory_id = $inventory->id;
             $transaction->transaction_type = $request->transaction_type;
+            $transaction->quantity = $request->quantity;
             $transaction->transaction_by = Auth::user()->id;
             if ($transaction->save()) {
                 $inventory->name = $product->name;
