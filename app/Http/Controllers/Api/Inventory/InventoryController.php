@@ -33,8 +33,8 @@ class InventoryController extends Controller
                 'inventory.is_active'
             )
             ->where('inventory.org_id', $request->org_id);
-        if(!empty($request->id)){
-            $inventory = $inventory->where('inventory.id', $request->id);
+        if(!empty($request->inventory_id)){
+            $inventory = $inventory->where('inventory.id', $request->inventory_id);
         }
         $inventory = $inventory->get();
         return response()->json(
