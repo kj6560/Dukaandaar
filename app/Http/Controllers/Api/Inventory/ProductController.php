@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Inventory;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\ProductPrice;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -27,11 +28,23 @@ class ProductController extends Controller
         $product->sku = $request->sku;
         $product->is_active = 1;
         if ($product->save()) {
-            return response()->json([
-                'statusCode' => 200,
-                'message' => 'Product added successfully',
-                'data' => $product,
-            ], 200);
+            $product_price = ProductPrice::where('org_id', $request->org_id)->where('product_id', $product->id)->first();
+            if (empty($product_price)) {
+                $product_price = new ProductPrice();
+                $product_price->org_id = $request->org_id;
+            }
+            $product_price->product_id = $product->id;
+            $product_price->price = doubleval($request->base_price);
+            $product_price->is_active = 1;
+            if ($product_price->save()) {
+                return response()->json([
+                    'statusCode' => 200,
+                    'message' => 'Product added successfully',
+                    'data' => $product,
+                ], 200);
+            } else {
+                return response()->json(['statusCode' => 400, 'message' => 'Product price not added', 'data' => []], 400);
+            }
         } else {
             return response()->json(['statusCode' => 400, 'message' => 'Product already exists', 'data' => []], 400);
         }
