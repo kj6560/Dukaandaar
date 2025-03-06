@@ -35,8 +35,11 @@ class InventoryController extends Controller
             ->where('inventory.org_id', $request->org_id);
         if(!empty($request->inventory_id)){
             $inventory = $inventory->where('inventory.id', $request->inventory_id);
+            $inventory = $inventory->first();
+        }else{
+            $inventory = $inventory->get();
         }
-        $inventory = $inventory->get();
+        
         return response()->json(
             [
                 'statusCode' => 200,
