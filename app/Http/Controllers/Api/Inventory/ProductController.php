@@ -31,7 +31,6 @@ class ProductController extends Controller
             $product_price = ProductPrice::where('product_id', $product->id)->first();
             if (empty($product_price)) {
                 $product_price = new ProductPrice();
-                $product_price->org_id = $request->org_id;
             }
             $product_price->product_id = $product->id;
             $product_price->price = doubleval($request->base_price);
