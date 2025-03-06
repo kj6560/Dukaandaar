@@ -28,7 +28,7 @@ class ProductController extends Controller
         $product->sku = $request->sku;
         $product->is_active = 1;
         if ($product->save()) {
-            $product_price = ProductPrice::where('org_id', $request->org_id)->where('product_id', $product->id)->first();
+            $product_price = ProductPrice::where('product_id', $product->id)->first();
             if (empty($product_price)) {
                 $product_price = new ProductPrice();
                 $product_price->org_id = $request->org_id;
