@@ -24,6 +24,7 @@ Route::middleware('auth:api')->group(function () {
     //Product
     Route::post('/addProduct', [ProductController::class, 'addProduct']);
     Route::get('/fetchProducts', [ProductController::class, 'fetchProducts']);
+    Route::get('/fetchProductUoms', [ProductController::class, 'fetchProductUoms']);
     Route::get('/deleteProduct', [ProductController::class, 'deleteProduct']);
 
     //orders

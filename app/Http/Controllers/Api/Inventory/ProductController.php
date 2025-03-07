@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Inventory;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductPrice;
+use App\Models\ProductUom;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -85,6 +86,19 @@ class ProductController extends Controller
             ], 200);
         } else {
             return response()->json(['statusCode' => 400, 'message' => 'Product not found', 'data' => []], 400);
+        }
+    }
+    public function fetchProductUoms(Request $request)
+    {
+        $productUoms = ProductUom::all();
+        if ($productUoms) {
+            return response()->json([
+                'statusCode' => 200,
+                'message' => 'Product Uoms fetched successfully',
+                'data' => $productUoms,
+            ], 200);
+        } else {
+            return response()->json(['statusCode' => 400, 'message' => 'Product Uoms not found', 'data' => []], 400);
         }
     }
 }
