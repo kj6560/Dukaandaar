@@ -13,7 +13,12 @@ class CustomerController extends Controller
         $request->validate([
             'org_id' => 'required',
         ]);
-        $customers = Customer::where('org_id', $request->org_id)->get();
+        $customers = Customer::where('org_id', $request->org_id);
+        if (!empty($request->customer_id)) {
+            $customers = $customers->where('id', $request->customer_id)->first();
+        } else {
+            $customers = $customers->get();
+        }
         return response()->json([
             'statusCode' => 200,
             'message' => 'Customers fetched successfully',
