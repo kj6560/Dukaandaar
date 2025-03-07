@@ -35,6 +35,7 @@ class ProductController extends Controller
             }
             $product_price->product_id = $product->id;
             $product_price->price = doubleval($request->base_price);
+            $product_price->uom_id = $request->uom_id;
             $product_price->is_active = 1;
             if ($product_price->save()) {
                 return response()->json([
