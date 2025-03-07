@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Auth\OrgController;
+use App\Http\Controllers\Api\Cutomers\CustomerController;
 use App\Http\Controllers\Api\Home\HomeController;
 use App\Http\Controllers\Api\Inventory\InventoryController;
 use App\Http\Controllers\Api\Inventory\ProductController;
@@ -30,4 +31,7 @@ Route::middleware('auth:api')->group(function () {
     //orders
     Route::get('/fetchOrders', [OrderController::class, 'fetchOrders']);
     Route::post('/updateOrder', [OrderController::class, 'updateOrder']);
+
+    //customers
+    Route::get('/fetchCustomers', [CustomerController::class, 'fetchCustomers']);
 });
