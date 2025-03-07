@@ -68,7 +68,8 @@ class ProductController extends Controller
             'products.product_mrp as product_mrp',
             'products.is_active as is_active',
             'product_price.price as base_price',
-            'product_uom.name as uom'
+            'product_uom.title as uom',
+            'product_uom.slug as uom_slug'
         );
         if (empty($request->product_id)) {
             $products = $products->orderBy('id', 'desc')->get();
