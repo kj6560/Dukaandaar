@@ -55,10 +55,25 @@ class ProductController extends Controller
         $request->validate([
             'org_id' => 'required',
         ]);
+        $products = Product::join('product_price', 'product_price.product_id', '=', 'products.id')
+            ->join('product_uom', 'product_uom.id', '=', 'product_price.uom_id')
+            ->where('org_id', $request->org_id)
+            ->where('products.is_active', 1)
+            ->where('product_price.is_active', 1)
+            ->where('product_uom.is_active', 1);
+        $products = $products->select(
+            'products.id as id',
+            'products.name as name',
+            'products.sku as sku',
+            'products.product_mrp as product_mrp',
+            'products.is_active as is_active',
+            'product_price.price as base_price',
+            'product_uom.name as uom'
+        );
         if (empty($request->product_id)) {
-            $products = Product::where('org_id', $request->org_id)->orderBy('id', 'desc')->get();
+            $products = $products->orderBy('id', 'desc')->get();
         } else {
-            $products = Product::where('org_id', $request->org_id)->where('id', $request->product_id)->first();
+            $products = $products->where('id', $request->product_id)->first();
         }
 
         if ($products) {
