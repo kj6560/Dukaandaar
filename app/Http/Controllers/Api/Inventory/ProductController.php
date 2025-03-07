@@ -56,7 +56,7 @@ class ProductController extends Controller
             'org_id' => 'required',
         ]);
         if (empty($request->product_id)) {
-            $products = Product::where('org_id', $request->org_id)->get();
+            $products = Product::where('org_id', $request->org_id)->orderBy('id', 'desc')->get();
         } else {
             $products = Product::where('org_id', $request->org_id)->where('id', $request->product_id)->first();
         }
