@@ -57,7 +57,7 @@ class ProductController extends Controller
         ]);
         $products = Product::join('product_price', 'product_price.product_id', '=', 'products.id')
             ->join('product_uom', 'product_uom.id', '=', 'product_price.uom_id')
-            ->where('org_id', $request->org_id)
+            ->where('products.org_id', $request->org_id)
             ->where('products.is_active', 1)
             ->where('product_price.is_active', 1)
             ->where('product_uom.is_active', 1);
@@ -72,9 +72,9 @@ class ProductController extends Controller
             'product_uom.slug as uom_slug'
         );
         if (empty($request->product_id)) {
-            $products = $products->orderBy('id', 'desc')->get();
+            $products = $products->orderBy('products.id', 'desc')->get();
         } else {
-            $products = $products->where('id', $request->product_id)->first();
+            $products = $products->where('products.id', $request->product_id)->first();
         }
 
         if ($products) {
