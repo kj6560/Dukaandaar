@@ -128,6 +128,9 @@ class OrderController extends Controller
         if (!empty($request->customer_id)) {
             $order->customer_id = $request->customer_id;
         }
+        if(!empty($request->payment_mode)) {
+            $order->payment_mode = $request->payment_mode;
+        }
         $order->save();
 
         if ($order->save()) {
