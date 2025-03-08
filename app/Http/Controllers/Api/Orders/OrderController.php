@@ -61,16 +61,16 @@ class OrderController extends Controller
             ')
             );
 
-            if(!empty($request->order_id)){
-                $orders = $orders->where('orders.id', $request->order_id)->first();
-                $orders->order_details = json_encode($orders->order_details);
-            }else{
-                $orders = $orders->get();
-                foreach ($orders as $order) {
-                    $order = json_encode($order->order_details);
-                }
+        if (!empty($request->order_id)) {
+            $orders = $orders->where('orders.id', $request->order_id)->first();
+            $orders->order_details = json_encode($orders->order_details);
+        } else {
+            $orders = $orders->get();
+            foreach ($orders as $order) {
+                $order = json_encode($order->order_details);
             }
-        
+        }
+
         return response()->json([
             'statusCode' => 200,
             'message' => 'Orders fetched successfully',
@@ -125,6 +125,9 @@ class OrderController extends Controller
         $order->net_total = $net_total;
         $order->created_by = $request->created_by;
         $order->order_status = 1;
+        if (!empty($request->customer_id)) {
+            $order->customer_id = $request->customer_id;
+        }
         $order->save();
 
         if ($order->save()) {
