@@ -55,38 +55,83 @@ class ProductController extends Controller
         $request->validate([
             'org_id' => 'required',
         ]);
+
         $products = Product::join('product_price', 'product_price.product_id', '=', 'products.id')
             ->join('product_uom', 'product_uom.id', '=', 'product_price.uom_id')
             ->where('products.org_id', $request->org_id)
             ->where('products.is_active', 1)
             ->where('product_price.is_active', 1)
-            ->where('product_uom.is_active', 1);
-        $products = $products->select(
-            'products.id as id',
-            'products.name as name',
-            'products.sku as sku',
-            'products.product_mrp as product_mrp',
-            'products.is_active as is_active',
-            'product_price.price as base_price',
-            'product_uom.title as uom',
-            'product_uom.slug as uom_slug'
-        );
-        if (empty($request->product_id)) {
-            $products = $products->orderBy('products.id', 'desc')->get();
-        } else {
+            ->where('product_uom.is_active', 1)
+            ->select(
+                'products.id as id',
+                'products.org_id as org_id',
+                'products.name as name',
+                'products.sku as sku',
+                'products.product_mrp as product_mrp',
+                'products.is_active as is_active',
+                'products.created_at as created_at',
+                'products.updated_at as updated_at',
+                'product_price.id as price_id',
+                'product_price.price as base_price',
+                'product_price.uom_id as uom_id',
+                'product_price.is_active as price_is_active',
+                'product_price.created_at as price_created_at',
+                'product_price.updated_at as price_updated_at',
+                'product_uom.title as uom',
+                'product_uom.slug as uom_slug'
+            );
+
+        if ($request->has('product_id')) {
             $products = $products->where('products.id', $request->product_id)->first();
+            $responseData = $products ? $this->formatProductResponse($products) : null;
+        } else {
+            $products = $products->orderBy('products.id', 'desc')->get();
+            $responseData = $products->map(function ($product) {
+                return $this->formatProductResponse($product);
+            });
         }
 
-        if ($products) {
+        if ($responseData) {
             return response()->json([
                 'statusCode' => 200,
                 'message' => 'Products fetched successfully',
-                'data' => $products,
+                'data' => $responseData,
             ], 200);
         } else {
-            return response()->json(['statusCode' => 400, 'message' => 'Products not found', 'data' => []], 400);
+            return response()->json([
+                'statusCode' => 400,
+                'message' => 'Products not found',
+                'data' => [],
+            ], 400);
         }
     }
+
+    private function formatProductResponse($product)
+    {
+        return [
+            'id' => $product->id,
+            'org_id' => $product->org_id,
+            'name' => $product->name,
+            'sku' => $product->sku,
+            'product_mrp' => $product->product_mrp,
+            'is_active' => $product->is_active,
+            'created_at' => $product->created_at,
+            'updated_at' => $product->updated_at,
+            'base_price' => $product->base_price,
+            'price' => [
+                'id' => $product->price_id,
+                'product_id' => $product->id,
+                'price' => $product->base_price,
+                'uom_id' => $product->uom_id,
+                'is_active' => $product->price_is_active,
+                'created_at' => $product->price_created_at,
+                'updated_at' => $product->price_updated_at,
+            ],
+            'uom' => $product->uom,
+            'uom_slug' => $product->uom_slug,
+        ];
+    }
+
     public function deleteProduct(Request $request)
     {
         $request->validate([
