@@ -28,26 +28,42 @@ class CustomerController extends Controller
     public function createCustomer(Request $request)
     {
         $request->validate([
-            'org_id' => 'required',
-            'customer_name' => 'required',
-            'customer_phone_number' => 'required',
-            'customer_address' => 'required',
-            'customer_active' => 'required',
-            'customer_image' => 'required'
+            'org_id' => 'required|integer',
+            'customer_name' => 'required|string',
+            'customer_phone_number' => 'required|string',
+            'customer_address' => 'required|string',
+            'customer_active' => 'required|boolean',
+            'customer_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
-        if (!empty($request->customer_id)) {
-            $customer = Customer::where('id', $request->customer_id)->first();
-        } else {
-            $customer = new Customer();
+
+        // Check if updating an existing customer
+        $customer = !empty($request->customer_id) ?
+            Customer::find($request->customer_id) :
+            new Customer();
+
+        if (!$customer) {
+            return response()->json([
+                'statusCode' => 404,
+                'message' => 'Customer not found',
+            ], 404);
         }
+
+        // Assign values
         $customer->customer_name = $request->customer_name;
         $customer->customer_phone_number = $request->customer_phone_number;
         $customer->customer_address = $request->customer_address;
         $customer->customer_active = $request->customer_active;
-        if(!empty($request->file('customer_image'))){
-            $customer->customer_image = $request->file('customer_image')->store('public/customer_images');
-        }
         $customer->org_id = $request->org_id;
+
+        // Handle image upload
+        if ($request->hasFile('customer_image')) {
+            $file = $request->file('customer_image');
+            $fileName = time() . '_' . $file->getClientOriginalName(); // Unique filename
+            $filePath = $file->storeAs('public/customer_images', $fileName); // Store in storage/app/public
+
+            $customer->customer_image = str_replace('public/', 'storage/', $filePath); // Fix path for serving
+        }
+
         if ($customer->save()) {
             return response()->json([
                 'statusCode' => 200,
@@ -58,7 +74,6 @@ class CustomerController extends Controller
             return response()->json([
                 'statusCode' => 400,
                 'message' => 'Customer creation failed',
-                'data' => $customer,
             ], 400);
         }
     }
