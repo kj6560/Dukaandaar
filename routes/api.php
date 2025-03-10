@@ -34,4 +34,5 @@ Route::middleware('auth:api')->group(function () {
 
     //customers
     Route::get('/fetchCustomers', [CustomerController::class, 'fetchCustomers']);
+    Route::post('/createCustomer', [CustomerController::class, 'createCustomer']);
 });
