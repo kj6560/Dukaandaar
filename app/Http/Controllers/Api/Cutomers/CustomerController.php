@@ -32,7 +32,7 @@ class CustomerController extends Controller
             'customer_name' => 'required|string',
             'customer_phone_number' => 'required|string',
             'customer_address' => 'required|string',
-            'customer_active' => 'required|boolean',
+            'customer_active' => 'required|int',
             'customer_image' => 'required|image'
         ]);
 
