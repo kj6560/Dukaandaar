@@ -8,6 +8,7 @@ $baseDir = dirname($vendorDir);
 return array(
     'App\\Http\\Controllers\\Api\\Auth\\AuthController' => $baseDir . '/app/Http/Controllers/Api/Auth/AuthController.php',
     'App\\Http\\Controllers\\Api\\Auth\\OrgController' => $baseDir . '/app/Http/Controllers/Api/Auth/OrgController.php',
+    'App\\Http\\Controllers\\Api\\Barcode\\BarcodeController' => $baseDir . '/app/Http/Controllers/Api/Barcode/BarcodeController.php',
     'App\\Http\\Controllers\\Api\\Cutomers\\CustomerController' => $baseDir . '/app/Http/Controllers/Api/Cutomers/CustomerController.php',
     'App\\Http\\Controllers\\Api\\Home\\HomeController' => $baseDir . '/app/Http/Controllers/Api/Home/HomeController.php',
     'App\\Http\\Controllers\\Api\\Inventory\\InventoryController' => $baseDir . '/app/Http/Controllers/Api/Inventory/InventoryController.php',
@@ -3724,6 +3725,7 @@ return array(
     'PHPUnit\\Framework\\Attributes\\UsesMethod' => $vendorDir . '/phpunit/phpunit/src/Framework/Attributes/UsesMethod.php',
     'PHPUnit\\Framework\\Attributes\\UsesTrait' => $vendorDir . '/phpunit/phpunit/src/Framework/Attributes/UsesTrait.php',
     'PHPUnit\\Framework\\Attributes\\WithoutErrorHandler' => $vendorDir . '/phpunit/phpunit/src/Framework/Attributes/WithoutErrorHandler.php',
+    'PHPUnit\\Framework\\ChildProcessResultProcessor' => $vendorDir . '/phpunit/phpunit/src/Framework/TestRunner/ChildProcessResultProcessor.php',
     'PHPUnit\\Framework\\CodeCoverageException' => $vendorDir . '/phpunit/phpunit/src/Framework/Exception/CodeCoverageException.php',
     'PHPUnit\\Framework\\ComparisonMethodDoesNotAcceptParameterTypeException' => $vendorDir . '/phpunit/phpunit/src/Framework/Exception/ObjectEquals/ComparisonMethodDoesNotAcceptParameterTypeException.php',
     'PHPUnit\\Framework\\ComparisonMethodDoesNotDeclareBoolReturnTypeException' => $vendorDir . '/phpunit/phpunit/src/Framework/Exception/ObjectEquals/ComparisonMethodDoesNotDeclareBoolReturnTypeException.php',
