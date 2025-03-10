@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Auth\OrgController;
+use App\Http\Controllers\Api\Barcode\BarcodeController;
 use App\Http\Controllers\Api\Cutomers\CustomerController;
 use App\Http\Controllers\Api\Home\HomeController;
 use App\Http\Controllers\Api\Inventory\InventoryController;
@@ -35,4 +36,7 @@ Route::middleware('auth:api')->group(function () {
     //customers
     Route::get('/fetchCustomers', [CustomerController::class, 'fetchCustomers']);
     Route::post('/createCustomer', [CustomerController::class, 'createCustomer']);
+
+    //barcode
+    Route::get('/generateBarcode', [BarcodeController::class, 'generateBarcode']);
 });
