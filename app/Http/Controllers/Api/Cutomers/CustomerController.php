@@ -61,7 +61,7 @@ class CustomerController extends Controller
             $fileName = time() . '_' . $file->getClientOriginalName(); // Unique filename
             $filePath = $file->storeAs('public/customer_images', $fileName); // Store in storage/app/public
 
-            $customer->customer_image = str_replace('public/', 'storage/', $filePath); // Fix path for serving
+            $customer->customer_pic = str_replace('public/', 'storage/', $filePath); // Fix path for serving
         }
 
         if ($customer->save()) {
