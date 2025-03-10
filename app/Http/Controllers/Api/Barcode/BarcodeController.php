@@ -37,7 +37,9 @@ class BarcodeController extends Controller
         return response()->json([
             'statusCode' => 200,
             'message' => 'Barcode generated successfully',
-            'barcode_url' => asset('storage/barcodes/' . $fileName),
+            'data'=>[
+                'barcode_url' => asset('storage/barcodes/' . $fileName),
+            ],
         ], 200);
     }
 }
