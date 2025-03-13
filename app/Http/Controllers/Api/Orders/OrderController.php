@@ -131,7 +131,7 @@ class OrderController extends Controller
         if (!empty($request->customer_id)) {
             $order->customer_id = $request->customer_id;
         }
-        if(!empty($request->payment_mode)) {
+        if (!empty($request->payment_mode)) {
             $order->payment_mode = $request->payment_mode;
         }
         $order->save();
@@ -161,24 +161,19 @@ class OrderController extends Controller
                 $orderDetail->quantity = $order_detail['quantity'];
                 $orderDetail->save();
             }
-            if(count($request->order) != $count) {
+            if (count($request->order) != $count) {
                 return response()->json([
                     'statusCode' => 400,
                     'message' => 'Some products are not available',
                     'data' => []
                 ]);
-            }else{
+            } else {
                 //update inventory
                 $inventory_updated_count = 0;
                 foreach ($request->order as $order_detail) {
-                    $product = Inventory::where('sku', $order_detail['sku'])->first();
-                    if (empty($product->id)) {
-                        continue;
-                    }
-                    $product->quantity = $product->quantity - $order_detail['quantity'];
-                    $product->save();
-                    $inventory_updated = $this->updateInventory($order_detail['quantity'], 'sale', $order_detail['sku'], $request->org_id);
-                    if($inventory_updated) {
+                    $product = Product::where('sku', $order_detail['sku'])->first();
+                    $inventory_updated = $this->updateInventory($order_detail['quantity'], 'sale', $product->sku, $request->org_id);
+                    if ($inventory_updated) {
                         $inventory_updated_count++;
                     }
                 }
@@ -233,7 +228,7 @@ class OrderController extends Controller
             'data' => $orders
         ]);
     }
-    public function updateInventory($quantity,$transaction_type,$sku,$org_id)
+    public function updateInventory($quantity, $transaction_type, $sku, $org_id)
     {
 
         $product = Product::where('sku', $sku)->first();
