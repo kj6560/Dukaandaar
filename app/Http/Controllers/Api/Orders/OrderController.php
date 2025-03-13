@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Api\Orders;
 
 use App\Http\Controllers\Controller;
+use App\Models\Inventory;
+use App\Models\InventoryTransaction;
 use App\Models\OrderDetails;
 use App\Models\Orders;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
@@ -134,8 +137,9 @@ class OrderController extends Controller
         $order->save();
 
         if ($order->save()) {
+            $count = 0;
             foreach ($request->order as $order_detail) {
-
+                $count++;
                 $product = Product::where('sku', $order_detail['sku'])->first();
 
                 if (empty($product->id)) {
@@ -156,6 +160,28 @@ class OrderController extends Controller
                 $orderDetail->net_price = $product->product_mrp * $order_detail['quantity'] - $order_detail['discount'] + $order_detail['tax'];
                 $orderDetail->quantity = $order_detail['quantity'];
                 $orderDetail->save();
+            }
+            if(count($request->order) != $count) {
+                return response()->json([
+                    'statusCode' => 400,
+                    'message' => 'Some products are not available',
+                    'data' => []
+                ]);
+            }else{
+                //update inventory
+                $inventory_updated_count = 0;
+                foreach ($request->order as $order_detail) {
+                    $product = Inventory::where('sku', $order_detail['sku'])->first();
+                    if (empty($product->id)) {
+                        continue;
+                    }
+                    $product->quantity = $product->quantity - $order_detail['quantity'];
+                    $product->save();
+                    $inventory_updated = $this->updateInventory($order_detail['quantity'], 'sale', $order_detail['sku'], $request->org_id);
+                    if($inventory_updated) {
+                        $inventory_updated_count++;
+                    }
+                }
             }
         }
         $orders = Orders::join('order_details as ord', 'ord.order_id', '=', 'orders.id')
@@ -206,5 +232,43 @@ class OrderController extends Controller
             'message' => 'Order updated successfully',
             'data' => $orders
         ]);
+    }
+    public function updateInventory($quantity,$transaction_type,$sku,$org_id)
+    {
+
+        $product = Product::where('sku', $sku)->first();
+        $inventory = Inventory::where('product_id', $product->id)->first();
+        if (!empty($inventory->id)) {
+            $old_quantity = $inventory->balance_quantity;
+            if (!empty($inventory->balance_quantity)) {
+                $inventory->old_quantity = $old_quantity;
+            }
+            if ($transaction_type == 'purchase') {
+                $inventory->balance_quantity = $inventory->balance_quantity + $quantity;
+            } else if ($transaction_type == 'sale') {
+                $inventory->balance_quantity = $inventory->balance_quantity - $quantity;
+            } else if ($transaction_type == 'adjustment') {
+                $inventory->balance_quantity = $quantity;
+            }
+        } else {
+            $inventory = new Inventory();
+            $inventory->balance_quantity = $quantity;
+            $inventory->is_active = 1;
+        }
+        $inventory->org_id = $org_id;
+        $inventory->product_id = $product->id;
+        $inventory->quantity = $quantity;
+        if ($inventory->save()) {
+            $transaction = new InventoryTransaction();
+            $transaction->inventory_id = $inventory->id;
+            $transaction->transaction_type = $transaction_type;
+            $transaction->quantity = $quantity;
+            $transaction->transaction_by = Auth::user()->id;
+            if ($transaction->save()) {
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 }
