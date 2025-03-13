@@ -17,7 +17,26 @@ class HomeController extends Controller
         if (!$this->checkSubscription(Auth::user()->id)) {
             return response()->json([
                 'status' => 'error',
-                'data' => []
+                'data' => [
+                    "sales_data" => [
+                        'sales_today' => "NA",
+                        'sales_this_month' => "NA",
+                        'sales_total' => "NA"
+
+                    ],
+                    "inventory_data" => [
+                        'inventory_added_today' => "NA",
+                        'inventory_added_this_month' => "NA",
+                        'inventory_added_total' => "NA"
+                    ],
+                    "products_data" => [
+
+                        'products_added_today' => "NA",
+                        'products_added_this_month' => "NA",
+                        'products_added_total' => "NA"
+
+                    ]
+                ]
             ], 405);
         }
         return response()->json([
