@@ -37,7 +37,7 @@ class HomeController extends Controller
 
                     ]
                 ]
-            ], 405);
+            ], 200);
         }
         return response()->json([
             'status' => 'success',
