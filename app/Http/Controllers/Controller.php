@@ -11,11 +11,11 @@ abstract class Controller
         $hasActiveSubscription = UserFeaturePurchase::where('user_id', $userId)
             ->where(function ($query) {
                 $query->whereNull('expires_at') // Lifetime purchase
-                    ->orWhere('expires_at', '>', now())
-                    ->orWhere('expired', 1)
-                    ; // Active subscription
+                    ->orWhere('expires_at', '>', now()); // Active subscription
             })
+            ->where('expired', 0) // Fix: Use `where()` instead of `andWhere()`
             ->exists();
+
         return $hasActiveSubscription;
     }
 }
