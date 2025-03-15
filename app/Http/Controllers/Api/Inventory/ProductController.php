@@ -90,6 +90,9 @@ class ProductController extends Controller
         if ($request->has('product_id')) {
             $products = $products->where('products.id', $request->product_id)->first();
             $responseData = $products ? $this->formatProductResponse($products) : null;
+        }else if($request->has('product_sku')){
+            $products = $products->where('products.sku', $request->product_id)->first();
+            $responseData = $products ? $this->formatProductResponse($products) : null;
         } else {
             $products = $products->orderBy('products.id', 'desc')->get();
             $responseData = $products->map(function ($product) {
