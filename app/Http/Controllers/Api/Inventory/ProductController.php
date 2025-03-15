@@ -91,7 +91,7 @@ class ProductController extends Controller
             $products = $products->where('products.id', $request->product_id)->first();
             $responseData = $products ? $this->formatProductResponse($products) : null;
         }else if($request->has('product_sku')){
-            $products = $products->where('products.sku', $request->product_id)->first();
+            $products = $products->where('products.sku', $request->product_sku)->first();
             $responseData = $products ? $this->formatProductResponse($products) : null;
         } else {
             $products = $products->orderBy('products.id', 'desc')->get();
