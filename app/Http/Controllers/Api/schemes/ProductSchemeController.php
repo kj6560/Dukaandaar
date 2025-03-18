@@ -72,9 +72,9 @@ class ProductSchemeController extends Controller
     }
 
     // Delete a scheme
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        $scheme = ProductScheme::find($id);
+        $scheme = ProductScheme::find($request->id);
         if (!$scheme)
             return response()->json(['message' => 'Scheme not found'], 404);
 

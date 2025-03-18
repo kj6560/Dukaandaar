@@ -44,6 +44,6 @@ Route::middleware('auth:api')->group(function () {
     //schemes
     Route::get('/allSchemes', [ProductSchemeController::class, 'index']);
     Route::post('/updateScheme', [ProductSchemeController::class, 'store']);
-    Route::get('/fetchSchemes/{id}', [ProductSchemeController::class, 'show']);
-    Route::post('/deleteScheme/{id}', [ProductSchemeController::class, 'destroy']);
+    Route::get('/fetchSchemes', [ProductSchemeController::class, 'show']);
+    Route::post('/deleteScheme', [ProductSchemeController::class, 'destroy']);
 });
