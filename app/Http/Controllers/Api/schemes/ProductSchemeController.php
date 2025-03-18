@@ -62,12 +62,22 @@ class ProductSchemeController extends Controller
     }
 
     // Get a single scheme
-    public function show($id)
+    public function show(Request $request)
     {
-        $scheme = ProductScheme::with('product')->find($id);
+        $scheme = ProductScheme::with('product')->find($request->id);
         if (!$scheme)
             return response()->json(['message' => 'Scheme not found'], 404);
 
+        if ($scheme->bundle_products != null && $scheme->bundle_products != "") {
+            $products = [];
+            $schemeProducts = json_decode($scheme->bundle_products);
+            foreach ($schemeProducts as $product) {
+                $product = Product::where('id', $product->product_id)->first();
+                $products[] = $product;
+            }
+            unset($scheme->bundle_products);
+            $scheme->bundle_products = $products;
+        }
         return response()->json($scheme);
     }
 
