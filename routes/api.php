@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\Home\HomeController;
 use App\Http\Controllers\Api\Inventory\InventoryController;
 use App\Http\Controllers\Api\Inventory\ProductController;
 use App\Http\Controllers\Api\Orders\OrderController;
+use App\Http\Controllers\Api\schemes\ProductSchemeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -39,4 +40,10 @@ Route::middleware('auth:api')->group(function () {
 
     //barcode
     Route::get('/generateBarcode', [BarcodeController::class, 'generateBarcode']);
+
+    //schemes
+    Route::get('/allSchemes', [ProductSchemeController::class, 'index']);
+    Route::post('/updateScheme', [ProductSchemeController::class, 'store']);
+    Route::get('/fetchSchemes/{id}', [ProductSchemeController::class, 'show']);
+    Route::post('/deleteScheme/{id}', [ProductSchemeController::class, 'destroy']);
 });
