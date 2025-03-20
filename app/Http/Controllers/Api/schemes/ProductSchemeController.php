@@ -83,7 +83,11 @@ class ProductSchemeController extends Controller
             unset($scheme->bundle_products);
             $scheme->bundle_products = $products;
         }
-        return response()->json($scheme);
+        return response()->json([
+            'statusCode' => 200,
+            'message' => 'Products fetched successfully',
+            'data' => $scheme,
+        ], 200);
     }
 
     // Delete a scheme
