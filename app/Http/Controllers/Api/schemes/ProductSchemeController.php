@@ -27,7 +27,12 @@ class ProductSchemeController extends Controller
                 $scheme->bundle_products = $products;
             }
         }
-        return response()->json($productSchemes);
+        return response()->json([
+            'statusCode' => 200,
+            'message' => 'Products fetched successfully',
+            'data' => $productSchemes,
+        ], 200);
+        
     }
 
     // Create a scheme
