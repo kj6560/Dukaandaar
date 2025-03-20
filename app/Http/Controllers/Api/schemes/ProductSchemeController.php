@@ -98,6 +98,10 @@ class ProductSchemeController extends Controller
             return response()->json(['message' => 'Scheme not found'], 404);
 
         $scheme->delete();
-        return response()->json(['message' => 'Scheme deleted successfully']);
+        return response()->json([
+            'statusCode' => 200,
+            'message' => 'Scheme Deleted successfully',
+            'data' => [],
+        ], 200);
     }
 }
