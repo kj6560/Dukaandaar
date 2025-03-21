@@ -38,18 +38,18 @@ class ProductSchemeController extends Controller
     // Create a scheme
     public function store(Request $request)
     {
-        $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'org_id' => 'required|exists:organization,id',
-            'scheme_name' => 'required|string',
-            'type' => 'required|in:fixed_discount,bogs,combo',
-            'value' => 'nullable|numeric',
-            'duration' => 'nullable|integer',
-            'bundle_products' => 'nullable|array',
-            'start_date' => 'nullable',
-            'end_date' => 'nullable',
-            'is_active' => 'boolean',
-        ]);
+        // $request->validate([
+        //     'product_id' => 'required|exists:products,id',
+        //     'org_id' => 'required|exists:organization,id',
+        //     'scheme_name' => 'required|string',
+        //     'type' => 'required|in:fixed_discount,bogs,combo',
+        //     'value' => 'nullable|numeric',
+        //     'duration' => 'nullable|integer',
+        //     'bundle_products' => 'nullable|array',
+        //     'start_date' => 'nullable',
+        //     'end_date' => 'nullable',
+        //     'is_active' => 'boolean',
+        // ]);
 
         $data = $request->all();
         if ($request->has('bundle_products')) {
