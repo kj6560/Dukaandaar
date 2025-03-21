@@ -46,8 +46,8 @@ class ProductSchemeController extends Controller
             'value' => 'nullable|numeric',
             'duration' => 'nullable|integer',
             'bundle_products' => 'nullable|array',
-            'start_date' => 'nullable|date',
-            'end_date' => 'nullable|date',
+            'start_date' => 'nullable',
+            'end_date' => 'nullable',
             'is_active' => 'boolean',
         ]);
 
