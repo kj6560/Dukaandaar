@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Api\schemes;
 
 use App\Http\Controllers\Controller;
@@ -33,6 +32,7 @@ class ProductSchemeController extends Controller
             'message' => 'Products fetched successfully',
             'data' => $productSchemes,
         ], 200);
+        
     }
 
     // Create a scheme
@@ -63,9 +63,8 @@ class ProductSchemeController extends Controller
             $scheme = ProductScheme::create($data);
         }
         $product = Product::where('id', $scheme->product_id)->first();
-        $products[] = $product;
-        unset($scheme->bundle_products);
-        $scheme->bundle_products = $products;
+
+        $scheme->product = $product;
         return response()->json(['message' => 'Scheme created successfully', 'data' => $scheme], 201);
     }
 
