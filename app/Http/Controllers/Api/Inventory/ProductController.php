@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api\Inventory;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductPrice;
+use App\Models\ProductScheme;
 use App\Models\ProductUom;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -90,7 +92,7 @@ class ProductController extends Controller
         if ($request->has('product_id')) {
             $products = $products->where('products.id', $request->product_id)->first();
             $responseData = $products ? $this->formatProductResponse($products) : null;
-        }else if($request->has('product_sku')){
+        } else if ($request->has('product_sku')) {
             $products = $products->where('products.sku', $request->product_sku)->first();
             $responseData = $products ? $this->formatProductResponse($products) : null;
         } else {
@@ -117,6 +119,37 @@ class ProductController extends Controller
 
     private function formatProductResponse($product)
     {
+        // Fetch multiple schemes for this product
+        $schemes = ProductScheme::with('product')
+            ->where('product_schemes.product_id', $product->id)
+            ->where('product_schemes.is_active', 1)
+            ->select(
+                'product_schemes.id',
+                'product_schemes.product_id',
+                'product_schemes.scheme_name',
+                'product_schemes.type',
+                'product_schemes.value',
+                'product_schemes.duration',
+                'product_schemes.bundle_products',
+                'product_schemes.start_date',
+                'product_schemes.end_date',
+                'product_schemes.is_active',
+                'product_schemes.created_at',
+                'product_schemes.updated_at'
+            )
+            ->get();
+        foreach ($schemes as $scheme) {
+            $products = [];
+            $schemeProducts = json_decode($scheme->bundle_products);
+            if(is_array($schemeProducts)){
+                foreach ($schemeProducts as $product) {
+                    $product = Product::where('id', $product->product_id)->first();
+                    $products[] = $product;
+                }
+                unset($scheme->bundle_products);
+                $scheme->bundle_products = $products;
+            }
+        }
         return [
             'id' => $product->id,
             'org_id' => $product->org_id,
@@ -143,7 +176,8 @@ class ProductController extends Controller
                 'is_active' => $product->uom_is_active,
                 'created_at' => $product->uom_created_at,
                 'updated_at' => $product->uom_updated_at,
-            ]
+            ],
+            'schemes' => $schemes, // List of all schemes for the product
         ];
     }
 
