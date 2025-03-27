@@ -21,6 +21,11 @@ class Product extends Model
     public function uom()
     {
         return $this->hasOneThrough(ProductUom::class, ProductPrice::class, 'product_id', 'id', 'id', 'uom_id')
-                    ->where('product_uom.is_active', 1);
+            ->where('product_uom.is_active', 1);
+    }
+    
+    public function schemes()
+    {
+        return $this->hasMany(ProductScheme::class, 'product_id');
     }
 }

@@ -60,7 +60,7 @@ class ProductController extends Controller
 
         $query = Product::where('org_id', $request->org_id)
             ->where('is_active', 1)
-            ->with(['latestPrice', 'latestPrice.uom']);
+            ->with(['latestPrice', 'latestPrice.uom', 'schemes']);
 
         if ($request->has('product_id')) {
             $product = $query->where('id', $request->product_id)->first();
@@ -83,6 +83,7 @@ class ProductController extends Controller
 
     private function formatProductResponse($product)
     {
+
         return [
             'id' => $product->id,
             'org_id' => $product->org_id,
@@ -110,9 +111,29 @@ class ProductController extends Controller
                 'created_at' => optional($product->latestPrice->uom)->created_at,
                 'updated_at' => optional($product->latestPrice->uom)->updated_at,
             ],
-            'schemes' => [], // Add logic if needed
+            'schemes' => $product->schemes->map(function ($scheme) {
+                $bundle_products = json_decode($scheme->bundle_products, true); // Decode as associative array
+
+                $bundle_products = array_map(function ($pro) {
+                    $pro['product'] = Product::find($pro['product_id']); // Attach product details
+                    return $pro;
+                }, $bundle_products ?? []);
+
+                return [
+                    'id' => $scheme->id,
+                    'scheme_name' => $scheme->scheme_name,
+                    'scheme_type' => $scheme->type,
+                    'scheme_value' => $scheme->value,
+                    'is_active' => $scheme->is_active,
+                    'created_at' => $scheme->created_at,
+                    'updated_at' => $scheme->updated_at,
+                    'bundle_products' => $bundle_products,
+                ];
+            }),
+
         ];
     }
+
 
 
 
