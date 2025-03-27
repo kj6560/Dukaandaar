@@ -58,98 +58,31 @@ class ProductController extends Controller
             'org_id' => 'required',
         ]);
 
-        $products = Product::join('product_price', 'product_price.product_id', '=', 'products.id')
-            ->join('product_uom', 'product_uom.id', '=', 'product_price.uom_id')
-            ->where('products.org_id', $request->org_id)
-            ->where('products.is_active', 1)
-            ->where('product_price.is_active', 1)
-            ->where('product_uom.is_active', 1)
-            ->select(
-                'products.id as id',
-                'products.org_id as org_id',
-                'products.name as name',
-                'products.sku as sku',
-                'products.product_mrp as product_mrp',
-                'products.is_active as is_active',
-                'products.created_at as created_at',
-                'products.updated_at as updated_at',
-                // Product Price
-                'product_price.id as price_id',
-                'product_price.price as base_price',
-                'product_price.uom_id as uom_id',
-                'product_price.is_active as price_is_active',
-                'product_price.created_at as price_created_at',
-                'product_price.updated_at as price_updated_at',
-                // UOM (Unit of Measurement)
-                'product_uom.id as uom_id',
-                'product_uom.title as uom_title',
-                'product_uom.slug as uom_slug',
-                'product_uom.is_active as uom_is_active',
-                'product_uom.created_at as uom_created_at',
-                'product_uom.updated_at as uom_updated_at'
-            );
+        $query = Product::where('org_id', $request->org_id)
+            ->where('is_active', 1)
+            ->with(['latestPrice', 'latestPrice.uom']);
 
         if ($request->has('product_id')) {
-            $products = $products->where('products.id', $request->product_id)->first();
-            $responseData = $products ? $this->formatProductResponse($products) : null;
-        } else if ($request->has('product_sku')) {
-            $products = $products->where('products.sku', $request->product_sku)->first();
-            $responseData = $products ? $this->formatProductResponse($products) : null;
+            $product = $query->where('id', $request->product_id)->first();
+            $responseData = $product ? $this->formatProductResponse($product) : null;
+        } elseif ($request->has('product_sku')) {
+            $product = $query->where('sku', $request->product_sku)->first();
+            $responseData = $product ? $this->formatProductResponse($product) : null;
         } else {
-            $products = $products->orderBy('products.id', 'desc')->get();
-            $responseData = $products->map(function ($product) {
-                return $this->formatProductResponse($product);
-            });
+            $products = $query->orderBy('id', 'desc')->get();
+            $responseData = $products->map(fn($product) => $this->formatProductResponse($product));
         }
 
-        if ($responseData) {
-            return response()->json([
-                'statusCode' => 200,
-                'message' => 'Products fetched successfully',
-                'data' => $responseData,
-            ], 200);
-        } else {
-            return response()->json([
-                'statusCode' => 400,
-                'message' => 'Products not found',
-                'data' => [],
-            ], 400);
-        }
+        return response()->json([
+            'statusCode' => $responseData ? 200 : 400,
+            'message' => $responseData ? 'Products fetched successfully' : 'Products not found',
+            'data' => $responseData ?? [],
+        ]);
     }
+
 
     private function formatProductResponse($product)
     {
-        // Fetch multiple schemes for this product
-        $schemes = ProductScheme::with('product')
-            ->where('product_schemes.product_id', $product->id)
-            ->where('product_schemes.is_active', 1)
-            ->select(
-                'product_schemes.id',
-                'product_schemes.product_id',
-                'product_schemes.scheme_name',
-                'product_schemes.type',
-                'product_schemes.value',
-                'product_schemes.duration',
-                'product_schemes.bundle_products',
-                'product_schemes.start_date',
-                'product_schemes.end_date',
-                'product_schemes.is_active',
-                'product_schemes.created_at',
-                'product_schemes.updated_at'
-            )
-            ->get();
-        foreach ($schemes as $scheme) {
-            $products = [];
-            $schemeProducts = json_decode($scheme->bundle_products);
-            if(is_array($schemeProducts)){
-                foreach ($schemeProducts as $product) {
-                    $product = Product::where('id', $product->product_id)->first();
-                    $products[] = $product;
-                }
-                unset($scheme->bundle_products);
-                $scheme->bundle_products = $products;
-            }
-        }
         return [
             'id' => $product->id,
             'org_id' => $product->org_id,
@@ -159,27 +92,28 @@ class ProductController extends Controller
             'is_active' => $product->is_active,
             'created_at' => $product->created_at,
             'updated_at' => $product->updated_at,
-            'base_price' => $product->base_price,
+            'base_price' => optional($product->latestPrice)->price,
             'price' => [
-                'id' => $product->price_id,
-                'product_id' => $product->id,
-                'price' => $product->base_price,
-                'uom_id' => $product->uom_id,
-                'is_active' => $product->price_is_active,
-                'created_at' => $product->price_created_at,
-                'updated_at' => $product->price_updated_at,
+                'id' => optional($product->latestPrice)->id,
+                'product_id' => optional($product->latestPrice)->product_id,
+                'price' => optional($product->latestPrice)->price,
+                'uom_id' => optional($product->latestPrice)->uom_id,
+                'is_active' => optional($product->latestPrice)->is_active,
+                'created_at' => optional($product->latestPrice)->created_at,
+                'updated_at' => optional($product->latestPrice)->updated_at,
             ],
             'uom' => [
-                'id' => $product->uom_id,
-                'title' => $product->uom_title,
-                'slug' => $product->uom_slug,
-                'is_active' => $product->uom_is_active,
-                'created_at' => $product->uom_created_at,
-                'updated_at' => $product->uom_updated_at,
+                'id' => optional($product->latestPrice->uom)->id,
+                'title' => optional($product->latestPrice->uom)->title,
+                'slug' => optional($product->latestPrice->uom)->slug,
+                'is_active' => optional($product->latestPrice->uom)->is_active,
+                'created_at' => optional($product->latestPrice->uom)->created_at,
+                'updated_at' => optional($product->latestPrice->uom)->updated_at,
             ],
-            'schemes' => $schemes, // List of all schemes for the product
+            'schemes' => [], // Add logic if needed
         ];
     }
+
 
 
     public function deleteProduct(Request $request)

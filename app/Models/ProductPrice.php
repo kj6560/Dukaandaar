@@ -6,5 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class ProductPrice extends Model
 {
-    public $table='product_price';
+    protected $table = 'product_price';
+
+    public function uom()
+    {
+        return $this->belongsTo(ProductUom::class, 'uom_id');
+    }
 }
