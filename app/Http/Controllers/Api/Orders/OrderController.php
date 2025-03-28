@@ -125,7 +125,9 @@ class OrderController extends Controller
                             if (!empty($bundle_product_details)) {
                                 switch ($scheme->type) {
                                     case 'combo':
-                                        echo "combo";
+                                        $total_order_value += $scheme->value;
+                                        $total_order_discount += $bundle_product_details->product_mrp * $bundle_product['quantity'];
+                                        $net_order_value += $total_order_value;
                                         break;
                                     case 'bogs':
                                         echo "bogs";
@@ -141,14 +143,18 @@ class OrderController extends Controller
                         }
                     }
                 }
+            } else {
+                $total_order_value += $product->product_mrp * $order_detail['quantity'];
+                $total_order_discount += $order_detail['discount'];
+                echo $total_order_discount,$total_order_value;
+                $net_order_value += $total_order_value - $total_order_discount;
             }
-            die;
-            $total_order_value += $product->product_mrp * $order_detail['quantity'];
-            $total_order_discount += $order_detail['discount'];
-            $net_order_value += $product->product_mrp * $order_detail['quantity'] - $order_detail['discount'];
+            
+
             $tax += $order_detail['tax'];
             $net_total += $net_order_value + $tax;
         }
+        die;
         $order->org_id = $request->org_id;
         $order->order_date = date('Y-m-d H:i:s');
         $order->total_order_value = $total_order_value;
