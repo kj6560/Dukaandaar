@@ -85,7 +85,7 @@ class OrderController extends Controller
     {
         $request->validate([
             'org_id' => 'required',
-            'order' => 'required',
+            'order' => 'required|array',
             'created_by' => 'required',
         ]);
         $order = $request->order;
