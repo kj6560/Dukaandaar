@@ -8,6 +8,7 @@ use App\Models\InventoryTransaction;
 use App\Models\OrderDetails;
 use App\Models\Orders;
 use App\Models\Product;
+use App\Models\ProductScheme;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -113,6 +114,35 @@ class OrderController extends Controller
             if (empty($product->id)) {
                 continue;
             }
+
+            $productSchemes = ProductScheme::where('product_id', $product->id)->get();
+            if ($productSchemes->isNotEmpty()) {
+                foreach ($productSchemes as $scheme) {
+                    $bundle_products = json_decode($scheme->bundle_products, true);
+                    if (is_array($bundle_products)) {
+                        foreach ($bundle_products as $bundle_product) {
+                            $bundle_product_details = Product::where('id', $bundle_product['product_id'])->first();
+                            if (!empty($bundle_product_details)) {
+                                switch ($scheme->type) {
+                                    case 'combo':
+                                        echo "combo";
+                                        break;
+                                    case 'bogs':
+                                        echo "bogs";
+                                        break;
+                                    case 'fixed_discount':
+                                        echo "fixed_discount";
+                                        // Handle cashback logic if needed
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            die;
             $total_order_value += $product->product_mrp * $order_detail['quantity'];
             $total_order_discount += $order_detail['discount'];
             $net_order_value += $product->product_mrp * $order_detail['quantity'] - $order_detail['discount'];
