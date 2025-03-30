@@ -123,7 +123,7 @@ class OrderController extends Controller
             if(empty($productInventory->id)) {
                 $error[] = $order_detail['sku']."No Inventory found";
             }
-            if ($productInventory->quantity < $order_detail['quantity']) {
+            if ($productInventory->balance_quantity < $order_detail['quantity']) {
                 $error[] = "Product quantity is not sufficiently available in inventory";
                 continue;
             }
@@ -152,17 +152,20 @@ class OrderController extends Controller
                                         $_total_order_discount += $product->product_mrp * $order_detail['quantity'] + $bundle_product_details->product_mrp * $bundle_product['quantity'];
                                         break;
                                     case 'bogs':
-                                        echo "bogs";
+                                        $_total_order_value += $product->product_mrp * $order_detail['quantity'] + $bundle_product_details->product_mrp * $bundle_product['quantity'] + $scheme->value;
+                                        $_total_order_discount += $product->product_mrp * $order_detail['quantity'] + $bundle_product_details->product_mrp * $bundle_product['quantity'];
                                         break;
                                     case 'fixed_discount':
-                                        echo "fixed_discount";
-                                        // Handle cashback logic if needed
+                                        $_total_order_value += $product->product_mrp * $order_detail['quantity'] ;
+                                        $_total_order_discount += $product->product_mrp * $order_detail['quantity'] - $bundle_product_details->product_mrp  * $bundle_product['quantity'] * $scheme->value/100;
+                                        
                                         break;
                                     default:
                                         break;
                                 }
                             }
                         }
+                        
                     }
                 }
             } else {
@@ -179,8 +182,8 @@ class OrderController extends Controller
         if (!empty($error)) {
             return response()->json([
                 'statusCode' => 400,
-                'message' => 'Some products are not available',
-                'data' => $error
+                'message' => $error,
+                'data' => []
             ]);
         }
         $order->org_id = $request->org_id;
