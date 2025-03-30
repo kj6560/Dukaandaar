@@ -103,6 +103,7 @@ class OrderController extends Controller
         } else {
             $order = new Orders();
         }
+        $error = [];
         $total_order_value = 0;
         $total_order_discount = 0;
         $net_order_value = 0;
@@ -110,11 +111,23 @@ class OrderController extends Controller
         $net_total = 0;
 
         foreach ($request->order as $order_detail) {
+            $_total_order_value = 0;
+            $_total_order_discount = 0;
+
             $product = Product::where('sku', $order_detail['sku'])->first();
             if (empty($product->id)) {
+                $error[] = $order_detail['sku']."Not found";
                 continue;
             }
-
+            $productInventory = Inventory::where('product_id', $product->id)->first();
+            if(empty($productInventory->id)) {
+                $error[] = $order_detail['sku']."No Inventory found";
+            }
+            if ($productInventory->quantity < $order_detail['quantity']) {
+                $error[] = "Product quantity is not sufficiently available in inventory";
+                continue;
+            }
+            
             $productSchemes = ProductScheme::where('product_id', $product->id)->get();
             if ($productSchemes->isNotEmpty()) {
                 foreach ($productSchemes as $scheme) {
@@ -122,12 +135,21 @@ class OrderController extends Controller
                     if (is_array($bundle_products)) {
                         foreach ($bundle_products as $bundle_product) {
                             $bundle_product_details = Product::where('id', $bundle_product['product_id'])->first();
+                            $bundleProductInventory = Inventory::where('product_id', $bundle_product['product_id'])->first();
+                        
+                            if(empty($bundleProductInventory->id)) {
+                                $error[] = "No Inventory found for $bundle_product_details->sku";
+                                continue;
+                            }
+                            if ($bundleProductInventory->balance_quantity < $bundle_product['quantity'] ) {
+                                $error[] = "Bundle product quantity is not sufficiently available in inventory";
+                                continue;
+                            }
                             if (!empty($bundle_product_details)) {
                                 switch ($scheme->type) {
                                     case 'combo':
-                                        $total_order_value += $scheme->value;
-                                        $total_order_discount += $bundle_product_details->product_mrp * $bundle_product['quantity'];
-                                        $net_order_value += $total_order_value;
+                                        $_total_order_value += $product->product_mrp * $order_detail['quantity'] + $bundle_product_details->product_mrp * $bundle_product['quantity'] + $scheme->value;
+                                        $_total_order_discount += $product->product_mrp * $order_detail['quantity'] + $bundle_product_details->product_mrp * $bundle_product['quantity'];
                                         break;
                                     case 'bogs':
                                         echo "bogs";
@@ -144,17 +166,23 @@ class OrderController extends Controller
                     }
                 }
             } else {
-                $total_order_value += $product->product_mrp * $order_detail['quantity'];
-                $total_order_discount += $order_detail['discount'];
-                echo $total_order_discount,$total_order_value;
-                $net_order_value += $total_order_value - $total_order_discount;
+                $_total_order_value += $product->product_mrp * $order_detail['quantity'];
+                $_total_order_discount += $order_detail['discount'];
             }
-            
 
+            $total_order_value += $_total_order_value;
+            $total_order_discount += $_total_order_discount;
+            $net_order_value += $_total_order_value - $_total_order_discount;
             $tax += $order_detail['tax'];
-            $net_total += $net_order_value + $tax;
+            $net_total += $_total_order_value - $_total_order_discount + $tax;
         }
-        die;
+        if (!empty($error)) {
+            return response()->json([
+                'statusCode' => 400,
+                'message' => 'Some products are not available',
+                'data' => $error
+            ]);
+        }
         $order->org_id = $request->org_id;
         $order->order_date = date('Y-m-d H:i:s');
         $order->total_order_value = $total_order_value;
