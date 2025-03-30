@@ -296,7 +296,30 @@ class OrderController extends Controller
     {
 
         $product = Product::where('sku', $sku)->first();
-        $inventory = Inventory::where('product_id', $product->id)->first();
+        if (empty($product->id)) {
+            return false;
+        }
+        $mainProductInventory  = $this->saveInventory($quantity, $transaction_type, $org_id,$product->id);
+        if ($mainProductInventory) {
+            $productSchemes = ProductScheme::where('product_id', $product->id)->get();
+            if ($productSchemes->isNotEmpty()) {
+                foreach ($productSchemes as $scheme) {
+                    $bundle_products = json_decode($scheme->bundle_products, true);
+                    if (is_array($bundle_products)) {
+                        foreach ($bundle_products as $bundle_product) {
+                            $this->saveInventory($bundle_product['quantity'], $transaction_type, $org_id, $bundle_product['product_id']);
+                        }
+                    }
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
+        
+    }
+    public function saveInventory($quantity, $transaction_type, $org_id,$product_id){
+        $inventory = Inventory::where('product_id', $product_id)->first();
         if (!empty($inventory->id)) {
             $old_quantity = $inventory->balance_quantity;
             if (!empty($inventory->balance_quantity)) {
@@ -315,7 +338,7 @@ class OrderController extends Controller
             $inventory->is_active = 1;
         }
         $inventory->org_id = $org_id;
-        $inventory->product_id = $product->id;
+        $inventory->product_id = $product_id;
         $inventory->quantity = $quantity;
         if ($inventory->save()) {
             $transaction = new InventoryTransaction();
