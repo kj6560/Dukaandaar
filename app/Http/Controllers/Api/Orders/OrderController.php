@@ -356,4 +356,21 @@ class OrderController extends Controller
             }
         }
     }
+    public function fetchCustomerOrders(Request $request)
+    {
+        $request->validate([
+            'org_id' => 'required'
+        ]);
+        $orders = Orders::with('orderDetails','orderDetails.product')
+                ->where('org_id', $request->org_id);
+                if (!empty($request->customer_id)) {
+                    $orders = $orders->where('customer_id', $request->customer_id);
+                }
+                $orders =$orders->orderBy('orders.id','desc')->get();
+        return response()->json([
+            'statusCode' => 200,
+            'message' => 'Orders fetched successfully',
+            'data' => $orders
+        ]);
+    }
 }

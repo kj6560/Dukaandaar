@@ -33,6 +33,7 @@ Route::middleware('auth:api')->group(function () {
     //orders
     Route::get('/fetchOrders', [OrderController::class, 'fetchOrders']);
     Route::post('/updateOrder', [OrderController::class, 'updateOrder']);
+    Route::get('/fetchCustomerOrders', [OrderController::class, 'fetchCustomerOrders']);
 
     //customers
     Route::get('/fetchCustomers', [CustomerController::class, 'fetchCustomers']);
