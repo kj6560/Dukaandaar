@@ -22,9 +22,11 @@ class InventoryController extends Controller
         }
         $inventory = Inventory::with(['transactions' => function ($query) {
             $query->orderBy('created_at', 'desc');
-        }, 'product', 'transactions.user'])
+        }, 'product' => function ($query) {
+            $query->where('is_active', '1');
+        }, 'transactions.user'])
             ->where('org_id', $request->org_id);
-
+        $inventory = $inventory->where('is_active', '1');
         if (!empty($request->inventory_id)) {
             $inventory = $inventory->where('id', $request->inventory_id)->first();
         } else {

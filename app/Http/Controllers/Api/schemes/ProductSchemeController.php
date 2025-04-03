@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Api\schemes;
 
 use App\Http\Controllers\Controller;
@@ -14,7 +15,9 @@ class ProductSchemeController extends Controller
         $request->validate([
             'org_id' => 'required|exists:organization,id',
         ]);
-        $productSchemes = ProductScheme::where('org_id', $request->org_id)->with('product')->get();
+        $productSchemes = ProductScheme::where('org_id', $request->org_id)->where('is_active', 1)->with(['product' => function ($query) {
+            $query->where('is_active', 1);
+        }])->get();
         foreach ($productSchemes as $scheme) {
             if ($scheme->bundle_products != null && $scheme->bundle_products != "") {
                 $products = [];
@@ -32,7 +35,6 @@ class ProductSchemeController extends Controller
             'message' => 'Products fetched successfully',
             'data' => $productSchemes,
         ], 200);
-        
     }
 
     // Create a scheme
