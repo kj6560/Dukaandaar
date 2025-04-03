@@ -144,7 +144,8 @@ class ProductController extends Controller
         ]);
         $product = Product::where('id', $request->id)->first();
         if ($product) {
-            $product->delete();
+            $product->is_active = 0;
+            $product->save();
             return response()->json([
                 'statusCode' => 200,
                 'message' => 'Product deleted successfully',
