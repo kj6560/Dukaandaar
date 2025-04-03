@@ -142,7 +142,7 @@ class ProductController extends Controller
         $request->validate([
             'id' => 'required'
         ]);
-        $product = Product::where('org_id', $request->org_id)->where('sku', $request->sku)->first();
+        $product = Product::where('id', $request->id)->first();
         if ($product) {
             $product->delete();
             return response()->json([
