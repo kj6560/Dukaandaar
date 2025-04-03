@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Inventory;
 
 use App\Http\Controllers\Controller;
+use App\Models\Inventory;
 use App\Models\Product;
 use App\Models\ProductPrice;
 use App\Models\ProductScheme;
@@ -146,6 +147,21 @@ class ProductController extends Controller
         if ($product) {
             $product->is_active = 0;
             $product->save();
+            $inventory = Inventory::where('product_id', $product->id)->first();
+            if ($inventory) {
+                $inventory->is_active = 0;
+                $inventory->save();
+            }
+            $product_price = ProductPrice::where('product_id', $product->id)->first();
+            if ($product_price) {
+                $product_price->is_active = 0;
+                $product_price->save();
+            }
+            $product_scheme = ProductScheme::where('product_id', $product->id)->first();
+            if ($product_scheme) {
+                $product_scheme->is_active = 0;
+                $product_scheme->save();
+            }
             return response()->json([
                 'statusCode' => 200,
                 'message' => 'Product deleted successfully',
