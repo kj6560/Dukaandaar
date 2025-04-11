@@ -7,11 +7,14 @@ use App\Models\Inventory;
 use App\Models\InventoryTransaction;
 use App\Models\OrderDetails;
 use App\Models\Orders;
+use App\Models\Organization;
 use App\Models\Product;
 use App\Models\ProductScheme;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class OrderController extends Controller
 {
@@ -89,8 +92,8 @@ class OrderController extends Controller
             'order' => 'required|array',
             'created_by' => 'required',
         ]);
-        $order = $request->order;
-        if (!is_array($order) || empty($order)) {
+
+        if (!is_array($request->order) || empty($request->order)) {
             return response()->json([
                 'statusCode' => 400,
                 'message' => 'Order details are required',
@@ -98,12 +101,9 @@ class OrderController extends Controller
             ]);
         }
 
-        if (!empty($request->order_id)) {
-            $order = Orders::find($request->order_id);
-        } else {
-            $order = new Orders();
-        }
-        $error = [];
+        $order = !empty($request->order_id) ? Orders::find($request->order_id) : new Orders();
+        $errors = [];
+
         $total_order_value = 0;
         $total_order_discount = 0;
         $net_order_value = 0;
@@ -111,83 +111,83 @@ class OrderController extends Controller
         $net_total = 0;
 
         foreach ($request->order as $order_detail) {
+            if (!isset($order_detail['sku'], $order_detail['quantity'], $order_detail['tax'], $order_detail['discount'])) {
+                $errors[] = "Missing fields in order detail";
+                continue;
+            }
+
+            $sku = $order_detail['sku'];
+            $quantity = $order_detail['quantity'];
+            $orderTax = $order_detail['tax'];
+            $discount = $order_detail['discount'];
+
             $_total_order_value = 0;
             $_total_order_discount = 0;
 
-            $product = Product::where('sku', $order_detail['sku'])->first();
-            if (empty($product->id)) {
-                $error[] = $order_detail['sku']."Not found";
+            $product = Product::where('sku', $sku)->first();
+            if (!$product) {
+                $errors[] = "$sku not found";
                 continue;
             }
-            $productInventory = Inventory::where('product_id', $product->id)->first();
-            if(empty($productInventory->id)) {
-                $error[] = $order_detail['sku']."No Inventory found";
-            }
-            if ($productInventory->balance_quantity < $order_detail['quantity']) {
-                $error[] = "Product quantity is not sufficiently available in inventory";
+
+            $inventory = Inventory::where('product_id', $product->id)->first();
+            if (!$inventory || $inventory->balance_quantity < $quantity) {
+                $errors[] = "Insufficient inventory for $sku";
                 continue;
             }
-            
+
             $productSchemes = ProductScheme::where('product_id', $product->id)->get();
             if ($productSchemes->isNotEmpty()) {
                 foreach ($productSchemes as $scheme) {
                     $bundle_products = json_decode($scheme->bundle_products, true);
                     if (is_array($bundle_products)) {
                         foreach ($bundle_products as $bundle_product) {
-                            $bundle_product_details = Product::where('id', $bundle_product['product_id'])->first();
-                            $bundleProductInventory = Inventory::where('product_id', $bundle_product['product_id'])->first();
-                        
-                            if(empty($bundleProductInventory->id)) {
-                                $error[] = "No Inventory found for $bundle_product_details->sku";
+                            if (!isset($bundle_product['product_id'], $bundle_product['quantity'])) continue;
+
+                            $bundleProduct = Product::find($bundle_product['product_id']);
+                            $bundleInventory = Inventory::where('product_id', $bundle_product['product_id'])->first();
+
+                            if (!$bundleInventory || $bundleInventory->balance_quantity < $bundle_product['quantity']) {
+                                $errors[] = "Insufficient bundle inventory for SKU: {$bundleProduct->sku}";
                                 continue;
                             }
-                            if ($bundleProductInventory->balance_quantity < $bundle_product['quantity'] ) {
-                                $error[] = "Bundle product quantity is not sufficiently available in inventory";
-                                continue;
-                            }
-                            if (!empty($bundle_product_details)) {
-                                switch ($scheme->type) {
-                                    case 'combo':
-                                        $_total_order_value += $product->product_mrp * $order_detail['quantity'] + $bundle_product_details->product_mrp * $bundle_product['quantity'] + $scheme->value;
-                                        $_total_order_discount += $product->product_mrp * $order_detail['quantity'] + $bundle_product_details->product_mrp * $bundle_product['quantity'];
-                                        break;
-                                    case 'bogs':
-                                        $_total_order_value += $product->product_mrp * $order_detail['quantity'] + $bundle_product_details->product_mrp * $bundle_product['quantity'] + $scheme->value;
-                                        $_total_order_discount += $product->product_mrp * $order_detail['quantity'] + $bundle_product_details->product_mrp * $bundle_product['quantity'];
-                                        break;
-                                    case 'fixed_discount':
-                                        $_total_order_value += $product->product_mrp * $order_detail['quantity'] ;
-                                        $_total_order_discount += $product->product_mrp * $order_detail['quantity'] - $bundle_product_details->product_mrp  * $bundle_product['quantity'] * $scheme->value/100;
-                                        
-                                        break;
-                                    default:
-                                        break;
-                                }
+
+                            switch ($scheme->type) {
+                                case 'combo':
+                                case 'bogs':
+                                    $_total_order_value += $product->product_mrp * $quantity + $bundleProduct->product_mrp * $bundle_product['quantity'] + $scheme->value;
+                                    $_total_order_discount += $product->product_mrp * $quantity + $bundleProduct->product_mrp * $bundle_product['quantity'];
+                                    break;
+                                case 'fixed_discount':
+                                    $_total_order_value += $product->product_mrp * $quantity;
+                                    $_total_order_discount += ($product->product_mrp * $quantity) - ($bundleProduct->product_mrp * $bundle_product['quantity']) * ($scheme->value / 100);
+                                    break;
                             }
                         }
-                        
                     }
                 }
             } else {
-                $_total_order_value += $product->product_mrp * $order_detail['quantity'];
-                $_total_order_discount += $order_detail['discount'];
+                $_total_order_value += $product->product_mrp * $quantity;
+                $_total_order_discount += $discount;
             }
 
             $total_order_value += $_total_order_value;
             $total_order_discount += $_total_order_discount;
             $net_order_value += $_total_order_value - $_total_order_discount;
-            $tax += $order_detail['tax'];
-            $net_total += $_total_order_value - $_total_order_discount + $tax;
+            $tax += $orderTax;
+            $net_total += ($_total_order_value - $_total_order_discount + $orderTax);
         }
-        if (!empty($error)) {
+
+        if (!empty($errors)) {
             return response()->json([
                 'statusCode' => 400,
-                'message' => $error,
+                'message' => $errors,
                 'data' => []
             ]);
         }
+
         $order->org_id = $request->org_id;
-        $order->order_date = date('Y-m-d H:i:s');
+        $order->order_date = now();
         $order->total_order_value = $total_order_value;
         $order->total_order_discount = $total_order_discount;
         $order->net_order_value = $net_order_value;
@@ -195,60 +195,48 @@ class OrderController extends Controller
         $order->net_total = $net_total;
         $order->created_by = $request->created_by;
         $order->order_status = 1;
-        if (!empty($request->customer_id)) {
-            $order->customer_id = $request->customer_id;
-        }
-        if (!empty($request->payment_mode)) {
-            $order->payment_mode = $request->payment_mode;
-        }
+        $order->customer_id = $request->customer_id ?? null;
+        $order->payment_mode = $request->payment_mode ?? null;
         $order->save();
 
-        if ($order->save()) {
-            $count = 0;
-            foreach ($request->order as $order_detail) {
-                $count++;
-                $product = Product::where('sku', $order_detail['sku'])->first();
+        $count = 0;
+        foreach ($request->order as $order_detail) {
+            $product = Product::where('sku', $order_detail['sku'])->first();
+            if (!$product) continue;
 
-                if (empty($product->id)) {
-                    continue;
-                }
-                if (!empty($request->order_id)) {
-                    $orderDetail = OrderDetails::where('order_id', $request->order_id)->first();
-                } else {
-                    $orderDetail = new OrderDetails();
-                }
+            $orderDetail = new OrderDetails();
+            $orderDetail->order_id = $order->id;
+            $orderDetail->product_id = $product->id;
+            $orderDetail->base_price = $product->product_mrp;
+            $orderDetail->discount = $order_detail['discount'];
+            $orderDetail->tax = $order_detail['tax'];
+            $orderDetail->quantity = $order_detail['quantity'];
+            $orderDetail->net_price = $product->product_mrp * $order_detail['quantity'] - $order_detail['discount'] + $order_detail['tax'];
+            $orderDetail->save();
 
+            $count++;
+        }
 
-                $orderDetail->order_id = $order->id;
-                $orderDetail->product_id = $product->id;
-                $orderDetail->base_price = $product->product_mrp;
-                $orderDetail->discount = $order_detail['discount'];
-                $orderDetail->tax = $order_detail['tax'];
-                $orderDetail->net_price = $product->product_mrp * $order_detail['quantity'] - $order_detail['discount'] + $order_detail['tax'];
-                $orderDetail->quantity = $order_detail['quantity'];
-                $orderDetail->save();
-            }
-            if (count($request->order) != $count) {
-                return response()->json([
-                    'statusCode' => 400,
-                    'message' => 'Some products are not available',
-                    'data' => []
-                ]);
-            } else {
-                //update inventory
-                $inventory_updated_count = 0;
-                foreach ($request->order as $order_detail) {
-                    $product = Product::where('sku', $order_detail['sku'])->first();
-                    $inventory_updated = $this->updateInventory($order_detail['quantity'], 'sale', $product->sku, $request->org_id);
-                    if ($inventory_updated) {
-                        $inventory_updated_count++;
-                    }
-                }
+        if (count($request->order) != $count) {
+            return response()->json([
+                'statusCode' => 400,
+                'message' => 'Some products are not available',
+                'data' => []
+            ]);
+        }
+
+        // Update inventory
+        foreach ($request->order as $order_detail) {
+            $product = Product::where('sku', $order_detail['sku'])->first();
+            if ($product) {
+                $this->updateInventory($order_detail['quantity'], 'sale', $product->sku, $request->org_id);
             }
         }
+
         $orders = Orders::join('order_details as ord', 'ord.order_id', '=', 'orders.id')
             ->join('products as p', 'p.id', '=', 'ord.product_id')
             ->where('orders.org_id', $request->org_id)
+            ->where('orders.id', $order->id)
             ->groupBy(
                 'orders.id',
                 'orders.org_id',
@@ -272,29 +260,79 @@ class OrderController extends Controller
                 'orders.tax',
                 'orders.net_total',
                 'orders.created_by',
-                DB::raw('
-                JSON_ARRAYAGG(
-                    JSON_OBJECT(
-                        "order_detail_id", ord.id,
-                        "product_id", ord.product_id,
-                        "base_price", ord.base_price,
-                        "discount", ord.discount,
-                        "tax", ord.tax,
-                        "net_price", ord.net_price,
-                        "product_name", p.name
-                    )
-                ) as order_details
-            ')
+                DB::raw('JSON_ARRAYAGG(
+                JSON_OBJECT(
+                    "order_detail_id", ord.id,
+                    "product_id", ord.product_id,
+                    "base_price", ord.base_price,
+                    "discount", ord.discount,
+                    "tax", ord.tax,
+                    "quantity", ord.quantity,
+                    "net_price", ord.net_price,
+                    "product_name", p.name
+                )
+            ) as order_details')
             )
-            ->where('orders.id', $order->id)
             ->first();
+
+        // Generate invoice
+        $invoiceDir = public_path('invoices');
+        if (!file_exists($invoiceDir)) {
+            mkdir($invoiceDir, 0775, true);
+        }
+        $user = User::find($request->created_by);
+        $org = Organization::find($user->org_id);
+        $pdf = Pdf::loadView('orders.invoice', ['order' => $orders,'org'=>$org]);
+        $invoiceFileName = 'invoice_' . $orders->order_id . '.pdf';
+        $pdfPath = $invoiceDir . '/' . $invoiceFileName;
+        $pdf->save($pdfPath);
+
+        $invoiceUrl = url('invoices/' . $invoiceFileName);
         $orders->order_details = json_encode($orders->order_details);
+
+        $invoiceText = "       *** INVOICE ***       \n";
+        $invoiceText .= "----------------------------\n";
+        $invoiceText .= "Order ID: {$orders->order_id}\n";
+        $invoiceText .= "Date: " . date('d M Y H:i', strtotime($orders->order_date)) . "\n";
+        $invoiceText .= "----------------------------\n";
+
+
+        $orderDetails = is_string($orders->order_details)
+            ? json_decode(json_decode($orders->order_details), true)
+            : $orders->order_details;
+
+        $invoiceText = "INVOICE\n";
+        $invoiceText .= "----------------------------\n";
+        $invoiceText .= "Customer: {$orders->customer_name}\n";
+        $invoiceText .= "Order ID: {$orders->order_id}\n";
+        $invoiceText .= "----------------------------\n";
+
+        foreach ($orderDetails as $item) {
+            $invoiceText .= "{$item['product_name']} x{$item['quantity']}\n";
+            $invoiceText .= "Price: ₹" . number_format($item['base_price'], 2) . "\n";
+            $invoiceText .= "Discount: ₹" . number_format($item['discount'], 2) . "\n";
+            $invoiceText .= "Tax: ₹" . number_format($item['tax'], 2) . "\n";
+            $invoiceText .= "Net: ₹" . number_format($item['net_price'], 2) . "\n";
+            $invoiceText .= "----------------------------\n";
+        }
+
+        $invoiceText .= "Order Total: ₹" . number_format($orders->total_order_value, 2) . "\n";
+        $invoiceText .= "Discount: ₹" . number_format($orders->total_order_discount, 2) . "\n";
+        $invoiceText .= "Tax: ₹" . number_format($orders->tax, 2) . "\n";
+        $invoiceText .= "Net Total: ₹" . number_format($orders->net_total, 2) . "\n";
+        $invoiceText .= "----------------------------\n";
+        $invoiceText .= "Thank you for your purchase!\n";
+        $invoiceText .= "----------------------------\n";
+
+        $orders->print_invoice = $invoiceText;
+
         return response()->json([
             'statusCode' => 200,
             'message' => 'Order updated successfully',
             'data' => $orders
         ]);
     }
+
     public function updateInventory($quantity, $transaction_type, $sku, $org_id)
     {
 
@@ -302,7 +340,7 @@ class OrderController extends Controller
         if (empty($product->id)) {
             return false;
         }
-        $mainProductInventory  = $this->saveInventory($quantity, $transaction_type, $org_id,$product->id);
+        $mainProductInventory  = $this->saveInventory($quantity, $transaction_type, $org_id, $product->id);
         if ($mainProductInventory) {
             $productSchemes = ProductScheme::where('product_id', $product->id)->get();
             if ($productSchemes->isNotEmpty()) {
@@ -319,9 +357,9 @@ class OrderController extends Controller
         } else {
             return false;
         }
-        
     }
-    public function saveInventory($quantity, $transaction_type, $org_id,$product_id){
+    public function saveInventory($quantity, $transaction_type, $org_id, $product_id)
+    {
         $inventory = Inventory::where('product_id', $product_id)->first();
         if (!empty($inventory->id)) {
             $old_quantity = $inventory->balance_quantity;
@@ -361,12 +399,12 @@ class OrderController extends Controller
         $request->validate([
             'org_id' => 'required'
         ]);
-        $orders = Orders::with('orderDetails','orderDetails.product')
-                ->where('org_id', $request->org_id);
-                if (!empty($request->customer_id)) {
-                    $orders = $orders->where('customer_id', $request->customer_id);
-                }
-                $orders =$orders->orderBy('orders.id','desc')->get();
+        $orders = Orders::with('orderDetails', 'orderDetails.product')
+            ->where('org_id', $request->org_id);
+        if (!empty($request->customer_id)) {
+            $orders = $orders->where('customer_id', $request->customer_id);
+        }
+        $orders = $orders->orderBy('orders.id', 'desc')->get();
         return response()->json([
             'statusCode' => 200,
             'message' => 'Orders fetched successfully',
