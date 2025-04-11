@@ -52,7 +52,7 @@ class OrgController extends Controller
                 $user->name = $request->org_name . ' Admin';
                 $user->email = $request->org_email;
                 $user->number = $request->org_number;
-                $user->password = Hash::make($request->number); 
+                $user->password = Hash::make($request->org_number); 
                 $user->org_id = $org->id;
                 $user->is_active = 0;
                 $user->save();
