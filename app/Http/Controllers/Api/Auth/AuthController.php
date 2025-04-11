@@ -14,6 +14,13 @@ class AuthController extends Controller
     {
         $user = User::where('email', $request->email)->first();
         if (!empty($user->id) && $user->is_active == 1 && Hash::check($request->password, $user->password)) {
+            if($this->checkSubscription($user->id) == false){
+                return response()->json([
+                    'statusCode' => 202,
+                    'message' => 'User subscription expired',
+                    'data' => []
+                ], 200);
+            }
             $token = $user->createToken('LaravelAuthApp')->accessToken;
             return response()->json([
                 'statusCode' => 200,
