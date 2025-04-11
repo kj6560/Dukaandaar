@@ -42,7 +42,7 @@ class OrgController extends Controller
             $org->org_email = $request->org_email;
             $org->org_number = $request->org_number;
             $org->org_address = $request->org_address;
-            $org->is_active = 1;
+            $org->is_active = 0;
             if ($org->save()) {
                 return response()->json([
                     'statusCode' => 200,
