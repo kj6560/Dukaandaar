@@ -18,9 +18,9 @@ class OrgController extends Controller
                 'org_email' => 'required|string|email|max:255|unique:organization',
                 'org_number' => 'required',
                 'org_address' => 'required',
-
             ]);
 
+            // Check if org already exists
             $org = Organization::where('org_number', $request->org_number)->first();
             if (!empty($org->id)) {
                 return response()->json([
@@ -29,6 +29,7 @@ class OrgController extends Controller
                     'data' => $org
                 ], 400);
             }
+
             $org = Organization::where('org_email', $request->org_email)->first();
             if (!empty($org->id)) {
                 return response()->json([
@@ -37,16 +38,28 @@ class OrgController extends Controller
                     'data' => $org
                 ], 400);
             }
+
+            // Create new organization
             $org = new Organization();
             $org->org_name = $request->org_name;
             $org->org_email = $request->org_email;
             $org->org_number = $request->org_number;
             $org->org_address = $request->org_address;
             $org->is_active = 0;
+
             if ($org->save()) {
+                $user = new User();
+                $user->name = $request->org_name . ' Admin';
+                $user->email = $request->org_email;
+                $user->number = $request->org_number;
+                $user->password = Hash::make($request->number); 
+                $user->org_id = $org->id;
+                $user->is_active = 0;
+                $user->save();
+
                 return response()->json([
                     'statusCode' => 200,
-                    'message' => 'Organization created successfully',
+                    'message' => 'Organization created successfully. Awaiting approval.',
                     'data' => $org
                 ]);
             } else {
@@ -62,6 +75,12 @@ class OrgController extends Controller
                 'message' => 'Validation failed',
                 'errors' => $e->errors(),
             ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'statusCode' => 500,
+                'message' => 'Server Error',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 }
