@@ -281,11 +281,11 @@ class OrderController extends Controller
         $user = User::find($request->created_by);
         $org = Organization::find($user->org_id);
         $pdf = Pdf::loadView('orders.invoice', ['order' => $orders,'org'=>$org]);
-        $invoiceFileName = 'invoice_' . $orders->order_id . '.pdf';
+        $invoiceFileName = 'invoice_'.$user->org_id.'_' . $orders->order_id . '.pdf';
         $pdfPath = $invoiceDir . '/' . $invoiceFileName;
         $pdf->save(storage_path('app/public/' . $pdfPath));
-
         $invoiceUrl = url('invoices/' . $invoiceFileName);
+        
         $orders->order_details = json_encode($orders->order_details);
 
         $invoiceText = "       *** INVOICE ***       \n";
