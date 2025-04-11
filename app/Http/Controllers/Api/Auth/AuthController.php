@@ -26,7 +26,7 @@ class AuthController extends Controller
         }
 
         return response()->json([
-            'statusCode' => 200,
+            'statusCode' => 202,
             'message' => 'Invalid credentials',
             'data' => [
             ]
