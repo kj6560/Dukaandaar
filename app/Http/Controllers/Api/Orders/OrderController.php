@@ -277,9 +277,7 @@ class OrderController extends Controller
 
         // Generate invoice
         $invoiceDir = public_path('invoices');
-        if (!file_exists($invoiceDir)) {
-            mkdir($invoiceDir, 0775, true);
-        }
+        
         $user = User::find($request->created_by);
         $org = Organization::find($user->org_id);
         $pdf = Pdf::loadView('orders.invoice', ['order' => $orders,'org'=>$org]);
