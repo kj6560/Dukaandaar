@@ -27,7 +27,7 @@ class AuthController extends Controller
             if($user->is_active == 0){
                 return response()->json([
                     'statusCode' => 202,
-                    'message' => 'User is not active',
+                    'message' => 'User is not active.Please contact admin',
                     'data' => []
                 ], 200);
             }
@@ -45,7 +45,7 @@ class AuthController extends Controller
                     'data' => []
                 ], 200);
             }
-            
+
         }
 
         return response()->json([
