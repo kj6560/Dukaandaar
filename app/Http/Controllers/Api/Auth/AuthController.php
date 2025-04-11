@@ -26,11 +26,11 @@ class AuthController extends Controller
         }
 
         return response()->json([
-            'statusCode' => 401,
+            'statusCode' => 200,
             'message' => 'Invalid credentials',
             'data' => [
             ]
-        ], 401);
+        ], 200);
     }
     public function register(Request $request)
     {
