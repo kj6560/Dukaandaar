@@ -23,6 +23,29 @@ class AuthController extends Controller
                     'user' => $user
                 ]
             ], 200);
+        }else{
+            if($user->is_active == 0){
+                return response()->json([
+                    'statusCode' => 202,
+                    'message' => 'User is not active',
+                    'data' => []
+                ], 200);
+            }
+            if(empty($user->id)){
+                return response()->json([
+                    'statusCode' => 202,
+                    'message' => 'User not found',
+                    'data' => []
+                ], 200);
+            }
+            if(!Hash::check($request->password, $user->password)){
+                return response()->json([
+                    'statusCode' => 202,
+                    'message' => 'Password is incorrect',
+                    'data' => []
+                ], 200);
+            }
+            
         }
 
         return response()->json([
