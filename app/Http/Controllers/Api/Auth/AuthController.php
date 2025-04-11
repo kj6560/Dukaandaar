@@ -24,7 +24,7 @@ class AuthController extends Controller
                 ]
             ], 200);
         }else{
-            if($user->is_active == 0){
+            if(!empty($user->is_active) && $user->is_active == 0){
                 return response()->json([
                     'statusCode' => 202,
                     'message' => 'User is not active.Please contact admin',
@@ -38,7 +38,7 @@ class AuthController extends Controller
                     'data' => []
                 ], 200);
             }
-            if(!Hash::check($request->password, $user->password)){
+            if(!empty($user->is_active) && !Hash::check($request->password, $user->password)){
                 return response()->json([
                     'statusCode' => 202,
                     'message' => 'Password is incorrect',
