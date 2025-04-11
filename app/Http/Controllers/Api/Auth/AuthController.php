@@ -17,7 +17,7 @@ class AuthController extends Controller
             if($this->checkSubscription($user->id) == false){
                 return response()->json([
                     'statusCode' => 202,
-                    'message' => 'User subscription expired',
+                    'message' => 'You don\'t have an active subscription. Plz contact admin',
                     'data' => []
                 ], 200);
             }
