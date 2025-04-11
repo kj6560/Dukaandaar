@@ -13,7 +13,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $user = User::where('email', $request->email)->first();
-        if (Hash::check($request->password, $user->password)) {
+        if (!empty($user->id) && $user->is_active == 1 && Hash::check($request->password, $user->password)) {
             $token = $user->createToken('LaravelAuthApp')->accessToken;
             return response()->json([
                 'statusCode' => 200,
@@ -28,8 +28,7 @@ class AuthController extends Controller
         return response()->json([
             'statusCode' => 202,
             'message' => 'Invalid credentials',
-            'data' => [
-            ]
+            'data' => []
         ], 200);
     }
     public function register(Request $request)
