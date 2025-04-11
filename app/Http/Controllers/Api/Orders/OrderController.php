@@ -276,7 +276,7 @@ class OrderController extends Controller
             ->first();
 
         // Generate invoice
-        $invoiceDir = public_path('invoices');
+        $invoiceDir = 'invoices';
         
         $user = User::find($request->created_by);
         $org = Organization::find($user->org_id);
