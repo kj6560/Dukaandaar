@@ -71,47 +71,74 @@ class OrderController extends Controller
         if (!empty($request->order_id)) {
             $orders = $orders->where('orders.id', $request->order_id)->first();
             $orders->order_details = json_encode($orders->order_details);
+            $invoiceText = "       *** INVOICE ***       \n";
+            $invoiceText .= "----------------------------\n";
+            $invoiceText .= "Order ID: {$orders->order_id}\n";
+            $invoiceText .= "Date: " . date('d M Y H:i', strtotime($orders->order_date)) . "\n";
+            $invoiceText .= "----------------------------\n";
+            $orderDetails = is_string($orders->order_details)
+                ? json_decode(json_decode($orders->order_details), true)
+                : $orders->order_details;
+
+            $invoiceText = "INVOICE\n";
+            $invoiceText .= "----------------------------\n";
+            $invoiceText .= "Customer: {$orders->customer_name}\n";
+            $invoiceText .= "Order ID: {$orders->order_id}\n";
+            $invoiceText .= "----------------------------\n";
+
+            foreach ($orderDetails as $item) {
+                $invoiceText .= "{$item['product_name']} x{$item['quantity']}\n";
+                $invoiceText .= "Price: ₹" . number_format($item['base_price'], 2) . "\n";
+                $invoiceText .= "Discount: ₹" . number_format($item['discount'], 2) . "\n";
+                $invoiceText .= "Tax: ₹" . number_format($item['tax'], 2) . "\n";
+                $invoiceText .= "Net: ₹" . number_format($item['net_price'], 2) . "\n";
+                $invoiceText .= "----------------------------\n";
+            }
+
+            $invoiceText .= "Order Total: ₹" . number_format($orders->total_order_value, 2) . "\n";
+            $invoiceText .= "Discount: ₹" . number_format($orders->total_order_discount, 2) . "\n";
+            $invoiceText .= "Tax: ₹" . number_format($orders->tax, 2) . "\n";
+            $invoiceText .= "Net Total: ₹" . number_format($orders->net_total, 2) . "\n";
+            $invoiceText .= "----------------------------\n";
+            $invoiceText .= "Thank you for your purchase!\n";
+            $invoiceText .= "----------------------------\n";
+
+            $orders->print_invoice = $invoiceText;
         } else {
             $orders = $orders->get();
             foreach ($orders as $order) {
-                $order = json_encode($order->order_details);
+                $order->order_details = json_encode($order->order_details);
+                $orderDetails = is_string($order->order_details)
+                    ? json_decode(json_decode($order->order_details), true)
+                    : $orders->order_details;
+
+                $invoiceText = "INVOICE\n";
+                $invoiceText .= "----------------------------\n";
+                $invoiceText .= "Customer: {$order->customer_name}\n";
+                $invoiceText .= "Order ID: {$order->order_id}\n";
+                $invoiceText .= "----------------------------\n";
+
+                foreach ($orderDetails as $item) {
+                    $invoiceText .= "{$item['product_name']} x{$item['quantity']}\n";
+                    $invoiceText .= "Price: ₹" . number_format($item['base_price'], 2) . "\n";
+                    $invoiceText .= "Discount: ₹" . number_format($item['discount'], 2) . "\n";
+                    $invoiceText .= "Tax: ₹" . number_format($item['tax'], 2) . "\n";
+                    $invoiceText .= "Net: ₹" . number_format($item['net_price'], 2) . "\n";
+                    $invoiceText .= "----------------------------\n";
+                }
+
+                $invoiceText .= "Order Total: ₹" . number_format($order->total_order_value, 2) . "\n";
+                $invoiceText .= "Discount: ₹" . number_format($order->total_order_discount, 2) . "\n";
+                $invoiceText .= "Tax: ₹" . number_format($order->tax, 2) . "\n";
+                $invoiceText .= "Net Total: ₹" . number_format($order->net_total, 2) . "\n";
+                $invoiceText .= "----------------------------\n";
+                $invoiceText .= "Thank you for your purchase!\n";
+                $invoiceText .= "----------------------------\n";
+
+                $order->print_invoice = $invoiceText;
             }
         }
-        $invoiceText = "       *** INVOICE ***       \n";
-        $invoiceText .= "----------------------------\n";
-        $invoiceText .= "Order ID: {$orders->order_id}\n";
-        $invoiceText .= "Date: " . date('d M Y H:i', strtotime($orders->order_date)) . "\n";
-        $invoiceText .= "----------------------------\n";
 
-
-        $orderDetails = is_string($orders->order_details)
-            ? json_decode(json_decode($orders->order_details), true)
-            : $orders->order_details;
-
-        $invoiceText = "INVOICE\n";
-        $invoiceText .= "----------------------------\n";
-        $invoiceText .= "Customer: {$orders->customer_name}\n";
-        $invoiceText .= "Order ID: {$orders->order_id}\n";
-        $invoiceText .= "----------------------------\n";
-
-        foreach ($orderDetails as $item) {
-            $invoiceText .= "{$item['product_name']} x{$item['quantity']}\n";
-            $invoiceText .= "Price: ₹" . number_format($item['base_price'], 2) . "\n";
-            $invoiceText .= "Discount: ₹" . number_format($item['discount'], 2) . "\n";
-            $invoiceText .= "Tax: ₹" . number_format($item['tax'], 2) . "\n";
-            $invoiceText .= "Net: ₹" . number_format($item['net_price'], 2) . "\n";
-            $invoiceText .= "----------------------------\n";
-        }
-
-        $invoiceText .= "Order Total: ₹" . number_format($orders->total_order_value, 2) . "\n";
-        $invoiceText .= "Discount: ₹" . number_format($orders->total_order_discount, 2) . "\n";
-        $invoiceText .= "Tax: ₹" . number_format($orders->tax, 2) . "\n";
-        $invoiceText .= "Net Total: ₹" . number_format($orders->net_total, 2) . "\n";
-        $invoiceText .= "----------------------------\n";
-        $invoiceText .= "Thank you for your purchase!\n";
-        $invoiceText .= "----------------------------\n";
-
-        $orders->print_invoice = $invoiceText;
         return response()->json([
             'statusCode' => 200,
             'message' => 'Orders fetched successfully',
@@ -311,11 +338,11 @@ class OrderController extends Controller
 
         // Generate invoice
         $invoiceDir = 'invoices';
-        
+
         $user = User::find($request->created_by);
         $org = Organization::find($user->org_id);
-        $pdf = Pdf::loadView('orders.invoice', ['order' => $orders,'org'=>$org]);
-        $invoiceFileName = 'invoice_'.$user->org_id.'_' . $orders->order_id . '.pdf';
+        $pdf = Pdf::loadView('orders.invoice', ['order' => $orders, 'org' => $org]);
+        $invoiceFileName = 'invoice_' . $user->org_id . '_' . $orders->order_id . '.pdf';
         $pdfPath = $invoiceDir . '/' . $invoiceFileName;
         $pdf->save(storage_path('app/public/' . $pdfPath));
         $invoiceUrl = url('invoices/' . $invoiceFileName);
