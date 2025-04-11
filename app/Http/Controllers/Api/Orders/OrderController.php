@@ -41,6 +41,7 @@ class OrderController extends Controller
                 'orders.net_total',
                 'orders.created_by'
             )
+            ->orderBy('orders.id', 'desc')
             ->select(
                 'orders.id as order_id',
                 'orders.org_id',
