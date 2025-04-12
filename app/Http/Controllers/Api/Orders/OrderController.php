@@ -25,7 +25,7 @@ class OrderController extends Controller
                 'statusCode' => 202,
                 'message' => 'You don\'t have an active subscription. Plz contact admin',
                 'data' => []
-            ], 200);
+            ], 202);
         }
         $request->validate([
             'org_id' => 'required',
