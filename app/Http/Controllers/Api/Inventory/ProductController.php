@@ -9,6 +9,7 @@ use App\Models\ProductPrice;
 use App\Models\ProductScheme;
 use App\Models\ProductUom;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
@@ -55,6 +56,13 @@ class ProductController extends Controller
     }
     public function fetchProducts(Request $request)
     {
+        if($this->checkSubscription(Auth::user()->id) == false){
+            return response()->json([
+                'statusCode' => 202,
+                'message' => 'You don\'t have an active subscription. Plz contact admin',
+                'data' => []
+            ], 202);
+        }
         $request->validate([
             'org_id' => 'required',
         ]);
