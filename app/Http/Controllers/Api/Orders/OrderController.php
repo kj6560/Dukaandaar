@@ -20,6 +20,13 @@ class OrderController extends Controller
 {
     public function fetchOrders(Request $request)
     {
+        if($this->checkSubscription(Auth::user()->id) == false){
+            return response()->json([
+                'statusCode' => 202,
+                'message' => 'You don\'t have an active subscription. Plz contact admin',
+                'data' => []
+            ], 200);
+        }
         $request->validate([
             'org_id' => 'required',
         ]);
