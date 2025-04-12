@@ -13,6 +13,13 @@ class InventoryController extends Controller
 {
     public function list(Request $request)
     {
+        if($this->checkSubscription(Auth::user()->id) == false){
+            return response()->json([
+                'statusCode' => 202,
+                'message' => 'You don\'t have an active subscription. Plz contact admin',
+                'data' => []
+            ], 202);
+        }
         if (empty($request->org_id)) {
             return response()->json([
                 'statusCode' => 400,
