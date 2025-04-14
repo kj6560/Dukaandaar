@@ -5,11 +5,19 @@ namespace App\Http\Controllers\Api\Cutomers;
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CustomerController extends Controller
 {
     public function fetchCustomers(Request $request)
     {
+        if($this->checkSubscription(Auth::user()->id) == false){
+            return response()->json([
+                'statusCode' => 202,
+                'message' => 'You don\'t have an active subscription. Plz contact admin',
+                'data' => []
+            ], 202);
+        }
         $request->validate([
             'org_id' => 'required',
         ]);
