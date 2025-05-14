@@ -47,7 +47,7 @@ class ContactUsController extends Controller
         }
         $appContacts = AppContactResponse::join('app_contacts', 'app_contact_responses.request_id', '=', 'app_contacts.id')
             ->join('users', 'users.id', '=', 'app_contacts.user_id')
-            ->select('app_contacts.')
+            ->select('app_contacts.name','app_contacts.email','app_contacts.message as query','app_contacts.query_status','app_contacts.created_at as query_date','app_contact_responses.response','app_contact_responses.created_at as answered_on')
             ->where('app_contacts.user_id', $user_id)
             ->where('users.is_active', 1)
             ->orderBy('app_contacts.id', 'desc')
