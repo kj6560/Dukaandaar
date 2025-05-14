@@ -49,7 +49,7 @@ class ContactUsController extends Controller
             ->where('user_id', $user_id)
             ->orderBy('app_contacts.id', 'desc')
             ->get();
-        echo $appContacts->count();die;
+
         if ($appContacts->count() > 0) {
             return response()->json([
                 'statusCode' => 200,
