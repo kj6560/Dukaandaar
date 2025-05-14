@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AppContact\ContactUsController;
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Auth\OrgController;
 use App\Http\Controllers\Api\Barcode\BarcodeController;
@@ -47,4 +48,8 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/updateScheme', [ProductSchemeController::class, 'store']);
     Route::get('/fetchSchemes', [ProductSchemeController::class, 'show']);
     Route::post('/deleteScheme', [ProductSchemeController::class, 'destroy']);
+
+    //app contacts
+    Route::post('/createContactFromApp', [ContactUsController::class, 'contactFromApp']);
+    Route::get('/fetchContactResponses', [ContactUsController::class, 'fetchContactResponses']);
 });
