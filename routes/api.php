@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\Inventory\InventoryController;
 use App\Http\Controllers\Api\Inventory\ProductController;
 use App\Http\Controllers\Api\Orders\OrderController;
 use App\Http\Controllers\Api\schemes\ProductSchemeController;
+use App\Http\Controllers\Api\Users\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -52,4 +53,7 @@ Route::middleware('auth:api')->group(function () {
     //app contacts
     Route::post('/createContactFromApp', [ContactUsController::class, 'contactFromApp']);
     Route::get('/fetchContactResponses', [ContactUsController::class, 'fetchContactResponses']);
+
+    //users
+    Route::post('/user/profile-picture', [UserController::class, 'updateProfilePicture']);
 });

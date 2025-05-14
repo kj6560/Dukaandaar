@@ -24,6 +24,7 @@ class User extends Authenticatable
         'number',
         'org_id',
         'password',
+        'profile_pic',
     ];
 
     /**
