@@ -55,5 +55,5 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/fetchContactResponses', [ContactUsController::class, 'fetchContactResponses']);
 
     //users
-    Route::post('/user/updateProfilePicture', [UserController::class, 'updateProfilePicture']);
+    Route::post('/updateProfilePicture', [UserController::class, 'updateProfilePicture']);
 });
