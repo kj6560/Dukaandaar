@@ -46,14 +46,17 @@ class ContactUsController extends Controller
             ], 202);
         }
         $appContacts = AppContactResponse::join('app_contacts', 'app_contact_responses.request_id', '=', 'app_contacts.id')
-            ->where('user_id', $user_id)
+            ->join('users', 'users.id', '=', 'app_contacts.user_id')
+            ->select('app_contacts.')
+            ->where('app_contacts.user_id', $user_id)
+            ->where('users.is_active', 1)
             ->orderBy('app_contacts.id', 'desc')
             ->get();
 
         return response()->json([
-                'statusCode' => 200,
-                'message' => 'Fetched Successfully',
-                'data' => $appContacts
-            ], 200);
+            'statusCode' => 200,
+            'message' => 'Fetched Successfully',
+            'data' => $appContacts
+        ], 200);
     }
 }
