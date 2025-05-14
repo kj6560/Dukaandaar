@@ -32,7 +32,7 @@ class UserController extends Controller
             ], 422);
         }
 
-        $user = Auth::user();
+        $user = User::find($request->user_id);
         $file = $request->file('profile_picture');
 
         $fileName = Str::uuid() . '.' . $file->getClientOriginalExtension();
