@@ -50,12 +50,10 @@ class ContactUsController extends Controller
             ->orderBy('app_contacts.id', 'desc')
             ->get();
 
-        if ($appContacts->count() > 0) {
-            return response()->json([
+        return response()->json([
                 'statusCode' => 200,
                 'message' => 'Fetched Successfully',
                 'data' => $appContacts
             ], 200);
-        }
     }
 }
