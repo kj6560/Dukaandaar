@@ -34,7 +34,7 @@
 					<ul class="navbar-nav topbar-nav ml-md-auto align-items-center">
 						<li class="nav-item dropdown">
 							<a class="dropdown-toggle profile-pic" data-toggle="dropdown" href="#"
-								aria-expanded="false"> <img src="{{ asset('theme/backend') }}/assets/img/profile.jpg"
+								aria-expanded="false"> <img src="{{ url('/storage') }}/{{ Auth::user()->profile_pic }}"
 									alt="user-img" width="36" class="img-circle"><span>Hizrian</span></span> </a>
 							<ul class="dropdown-menu dropdown-user">
 								<li>
