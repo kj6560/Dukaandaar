@@ -111,13 +111,13 @@
 				</div>
 				<ul class="nav">
 					<li class="nav-item active">
-						<a href="index.html">
+						<a href="/admin/dashboard">
 							<i class="la la-dashboard"></i>
 							<p>Dashboard</p>
 							<span class="badge badge-count">5</span>
 						</a>
 					</li>
-					<li class="nav-item">
+					<!-- <li class="nav-item">
 						<a href="components.html">
 							<i class="la la-table"></i>
 							<p>Components</p>
@@ -163,7 +163,7 @@
 							<i class="la la-hand-pointer-o"></i>
 							<p>Update To Pro</p>
 						</button>
-					</li>
+					</li> -->
 				</ul>
 			</div>
 		</div>
