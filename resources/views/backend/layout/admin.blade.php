@@ -214,7 +214,6 @@
 <script src="{{ asset('theme/backend') }}/assets/js/plugin/chart-circle/circles.min.js"></script>
 <script src="{{ asset('theme/backend') }}/assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script>
 <script src="{{ asset('theme/backend') }}/assets/js/ready.min.js"></script>
-<script src="{{ asset('theme/backend') }}/assets/js/demo.js"></script>
 <script src="https://cdn.datatables.net/2.1.6/js/dataTables.js"></script>
 @yield('custom_javascript')
 </html>
