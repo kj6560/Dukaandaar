@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Users;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use App\Models\User;
@@ -80,5 +81,32 @@ class UserController extends Controller
             'message' => 'Data Fetched Successfully',
             'data' => $orgUsers ?? []
         ], status: 200);
+    }
+    public function createNewUser(Request $request){
+            $validator = Validator::make($request->all(), [
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:users,email',
+        'password' => 'required|string|min:6',
+        'number' => 'nullable|string|max:15',
+        'role' => 'required|in:2,3,4,5',
+        'is_active' => 'required|boolean',
+        'profile_pic' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json(['errors' => $validator->errors()], 422);
+    }
+
+    $data = $request->only(['name', 'email', 'number', 'role', 'is_active']);
+    $data['password'] = Hash::make($request->password);
+
+    if ($request->hasFile('profile_pic')) {
+        $filePath = $request->file('profile_pic')->store('profile_pictures', 'public');
+        $data['profile_pic'] = $filePath;
+    }
+
+    $user = User::create($data);
+
+    return response()->json(['message' => 'User created successfully', 'user' => $user], 201);
     }
 }
