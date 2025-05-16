@@ -64,4 +64,21 @@ class UserController extends Controller
             ], 500);
         }
     }
+    public function fetchUsersByOrg(Request $request)
+    {
+        $org_id = $request->org_id;
+        if (empty($org_id)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Org id is required',
+                'errors' => 'org_id'
+            ], 400);
+        }
+        $orgUsers = User::where('org_id', $org_id)->where('role','!=',1)->get();
+        return response()->json([
+            'success' => true,
+            'message' => 'Data Fetched Successfully',
+            'data' => $orgUsers ?? []
+        ], status: 200);
+    }
 }
