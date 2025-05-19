@@ -89,7 +89,7 @@ class UserController extends Controller
         'password' => 'required|string|min:6',
         'number' => 'nullable|string|max:15',
         'role' => 'required|in:2,3,4,5',
-        'is_active' => 'required|boolean',
+        'is_active' => 'required|in:0,1',
         'profile_pic' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
     ]);
 
