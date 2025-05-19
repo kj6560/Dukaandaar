@@ -94,7 +94,11 @@ class UserController extends Controller
     ]);
 
     if ($validator->fails()) {
-        return response()->json(['errors' => $validator->errors()], 422);
+        return response()->json([
+            'success' => false,
+            'message' => $validator->errors(),
+            'data' => $orgUsers ?? []
+        ], status: 422);
     }
 
     $data = $request->only(['name', 'email', 'number', 'role', 'is_active']);
@@ -107,6 +111,10 @@ class UserController extends Controller
 
     $user = User::create($data);
 
-    return response()->json(['message' => 'User created successfully', 'user' => $user], 201);
+    return response()->json([
+            'success' => true,
+            'message' => 'User created successfully',
+            'data' => $user
+        ], status: 200);
     }
 }
