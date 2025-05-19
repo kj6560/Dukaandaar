@@ -58,4 +58,5 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/updateProfilePicture', [UserController::class, 'updateProfilePicture']);
     Route::get('/fetchUsersByOrg', [UserController::class, 'fetchUsersByOrg']);
     Route::post('/createNewUser', [UserController::class, 'createNewUser']);
+    Route::get('/deleteUser',[UserController::class,'deleteUser']);
 });

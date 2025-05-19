@@ -113,7 +113,7 @@ class UserController extends Controller
             $data['profile_pic'] = $filePath;
         }
         $data['org_id'] = Auth::user()->org_id;
-        
+
         $user = User::create($data);
 
         return response()->json([
@@ -121,5 +121,33 @@ class UserController extends Controller
             'message' => 'User created successfully',
             'data' => $user
         ], status: 200);
+    }
+    public function deleteUser(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required|int'
+        ]);
+
+        if ($validator->fails()) {
+            $errors = Arr::flatten($validator->errors()->toArray());
+
+            return response()->json([
+                'success' => false,
+                'message' => implode(", ", $errors),
+                'data' => []
+            ], 422);
+        }
+
+        $user_id = $request->user_id;
+
+        $deleted = User::where('id', $user_id)->update(['is_active' => 0]);
+        if ($deleted) {
+            return response()->json([
+                'success' => true,
+                'message' => 'User deleted successfully',
+                'data' => []
+            ], status: 200);
+        }
+
     }
 }
