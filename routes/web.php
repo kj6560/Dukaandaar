@@ -23,6 +23,7 @@ Route::prefix('admin')->middleware(['auth:web', CheckSubscription::class])->grou
 Route::prefix('admin')->middleware(['auth:web'])->group(function () {
     Route::get('/subscription/purchase', [SubscriptionController::class, 'showPurchasePage'])->name('subscription.purchase');
     Route::get('/subscription/purchase/{id}', [SubscriptionController::class, 'purchase'])->name('subscription.purchase.id');
+    Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 Route::middleware(['auth:web'])->group(function () {
     Route::get('/initiate', [PaytmController::class, 'initiate'])->name('initiate.payment');

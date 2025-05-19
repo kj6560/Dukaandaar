@@ -44,12 +44,11 @@
 										</div>
 										<div class="u-text">
 											<h4><?php
-												echo Auth::user()->name;
+echo Auth::user()->name;
 											?></h4>
 											<p class="text-muted"><?php
-												echo Auth::user()->email;
-											?></p><a href="profile.html"
-												class="btn btn-rounded btn-danger btn-sm">View Profile</a>
+echo Auth::user()->email;
+											?></p><a href="profile.html" class="btn btn-rounded btn-danger btn-sm">View Profile</a>
 										</div>
 									</div>
 								</li>
@@ -60,7 +59,10 @@
 								<div class="dropdown-divider"></div>
 								<a class="dropdown-item" href="#"><i class="ti-settings"></i> Account Setting</a>
 								<div class="dropdown-divider"></div>
-								<a class="dropdown-item" href="#"><i class="fa fa-power-off"></i> Logout</a>
+								<a class="dropdown-item" href="/admin/logout">
+									<i class="fa fa-power-off"></i>
+									<span class="align-middle">Logout ({{ Auth::user()->name}})</span>
+								</a>
 							</ul>
 							<!-- /.dropdown-user -->
 						</li>
@@ -78,10 +80,10 @@
 						<a class="" data-toggle="collapse" href="#collapseExample" aria-expanded="true">
 							<span>
 								<?php
-												echo Auth::user()->name;
+echo Auth::user()->name;
 											?>
 								<span class="user-level"><?php
-												echo Auth::user()->role ==1 ? "Super User":"User";
+echo Auth::user()->role == 1 ? "Super User" : "User";
 											?></span>
 								<span class="caret"></span>
 							</span>
@@ -216,4 +218,5 @@
 <script src="{{ asset('theme/backend') }}/assets/js/ready.min.js"></script>
 <script src="https://cdn.datatables.net/2.1.6/js/dataTables.js"></script>
 @yield('custom_javascript')
+
 </html>
