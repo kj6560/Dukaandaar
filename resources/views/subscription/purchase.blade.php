@@ -55,6 +55,7 @@
                     </ul>
 
                     <div class="text-center mt-4">
+                        {{-- <a href="{{ route('subscription.payment', ['id' => $feature->id]) }}" class="btn btn-subscribe w-100">Subscribe Now</a> --}}
                         <a href="{{ route('initiate.payment', ['feature_id' => $feature->id]) }}" class="btn btn-subscribe w-100">Subscribe Now</a>
                     </div>
                 </div>

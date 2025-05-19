@@ -13,4 +13,9 @@ class SubscriptionController extends Controller
         $features = SubsFeature::with('details')->get();
         return view('subscription.purchase', compact('features'));
     }
+    public function payment(Request $request,$id)
+    {
+        $features = SubsFeature::with('details')->get();
+        return view('razorpay.payment', compact('features'));
+    }
 }

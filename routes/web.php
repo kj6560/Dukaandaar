@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Backend\AuthController;
 use App\Http\Controllers\Backend\DashboardController;
+use App\Http\Controllers\Backend\RazorController;
 use App\Http\Controllers\Backend\SubscriptionController;
 use App\Http\Controllers\Frontend\SiteController;
 use App\Http\Controllers\PaytmController;
@@ -23,10 +24,15 @@ Route::prefix('admin')->middleware(['auth:web', CheckSubscription::class])->grou
 Route::prefix('admin')->middleware(['auth:web'])->group(function () {
     Route::get('/subscription/purchase', [SubscriptionController::class, 'showPurchasePage'])->name('subscription.purchase');
     Route::get('/subscription/purchase/{id}', [SubscriptionController::class, 'purchase'])->name('subscription.purchase.id');
+    Route::get('/subscription/payment/{id}', [SubscriptionController::class, 'payment'])->name('subscription.payment');
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 Route::middleware(['auth:web'])->group(function () {
     Route::get('/initiate', [PaytmController::class, 'initiate'])->name('initiate.payment');
     Route::post('/payment', [PaytmController::class, 'pay'])->name('make.payment');
     Route::post('/payment/status', [PaytmController::class, 'paymentCallback'])->name('status');
+});
+Route::middleware(['auth:web'])->group(function () {
+    Route::get('/razor_callback', [RazorController::class, 'razor_callback'])->name('razor_callback');
+    Route::post('/create-order', [RazorController::class, 'createOrder'])->name('create.order');
 });
