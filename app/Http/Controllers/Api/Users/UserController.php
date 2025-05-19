@@ -76,7 +76,7 @@ class UserController extends Controller
                 'errors' => 'org_id'
             ], 400);
         }
-        $orgUsers = User::where('org_id', $org_id)->where('role', '!=', 1)->get();
+        $orgUsers = User::where('org_id', $org_id)->where('role', '!=', 1)->where('is_active',1)->get();
         return response()->json([
             'success' => true,
             'message' => 'Data Fetched Successfully',
