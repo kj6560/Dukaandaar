@@ -75,6 +75,23 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-md-3">
+                        <div class="card card-stats card-primary">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-5 text-center">
+                                        <i class="la la-check-circle icon-big"></i>
+                                    </div>
+                                    <div class="col-7 d-flex align-items-center">
+                                        <div class="numbers">
+                                            <p class="card-category">Users</p>
+                                            <h4 class="card-title">{{ $total_users ?? 0 }}</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
 

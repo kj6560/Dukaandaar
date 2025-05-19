@@ -9,6 +9,7 @@ use App\Models\Orders;
 use App\Models\Organization;
 use App\Models\Product;
 use App\Models\SubsFeature;
+use App\Models\User;
 use App\Models\UserFeaturePurchase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -23,6 +24,7 @@ class DashboardController extends Controller
         $products = Product::where("org_id", $org->id)->count();
         $inventory = Inventory::where("org_id", $org->id)->count();
         $orders = Orders::where("org_id", $org->id)->count();
+        $users = User::where('org_id',$org->id)->where('role','!=',1)->count();
         $userId = auth()->user()->id;
         $activeSubscription = UserFeaturePurchase::where('user_id', $userId)
             ->where(function ($query) {
@@ -64,6 +66,7 @@ class DashboardController extends Controller
             'total_products' => $products,
             'total_inventories' => $inventory,
             'total_orders' => $orders,
+            'total_users' => $users,
             'showSubscriptionFeatures'=> !empty($activeSubscription->id) ? 1 :0,
         ]);
     }
