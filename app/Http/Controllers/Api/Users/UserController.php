@@ -112,7 +112,8 @@ class UserController extends Controller
             $filePath = $request->file('profile_pic')->store('profile_pictures', 'public');
             $data['profile_pic'] = $filePath;
         }
-
+        $data['org_id'] = Auth::user()->org_id;
+        
         $user = User::create($data);
 
         return response()->json([
