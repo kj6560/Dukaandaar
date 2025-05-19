@@ -99,6 +99,9 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         $user = OauthAccessTokens::where('user_id', $request->user_id)->first();
+        $u = User::where('id',$request->user_id)->first();
+        $u->device_id = "";
+        $u->save();
         if (!empty($user->user_id)) {
             $user->delete();
             return response()->json(['success' => true], 200);
