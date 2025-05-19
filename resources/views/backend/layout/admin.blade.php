@@ -3,7 +3,7 @@
 
 <head>
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-	<title>SwiftSell</title>
+	<title>FizSell</title>
 	<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no'
 		name='viewport' />
 	<link rel="stylesheet" href="{{ asset('theme/backend') }}/assets/css/bootstrap.min.css">
@@ -21,7 +21,7 @@
 		<div class="main-header">
 			<div class="logo-header">
 				<a href="/" class="logo">
-					SwiftSell Dashboard
+					FizSell Dashboard
 				</a>
 				<button class="navbar-toggler sidenav-toggler ml-auto" type="button" data-toggle="collapse"
 					data-target="collapse" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle navigation">

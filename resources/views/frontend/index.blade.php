@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>SwiftSell Mobile POS</title>
+  <title>FizSell Mobile POS</title>
   <meta name="description" content="">
   <meta name="keywords" content="Point Of Sale Software,Mobile Point Of Sale,point of sale">
 
@@ -46,7 +46,7 @@
 
       <div class="container position-relative d-flex align-items-center justify-content-between">
         <a href="index.html" class="logo d-flex align-items-center">
-          <h1 class="sitename">SwiftSell</h1>
+          <h1 class="sitename">FizSell</h1>
         </a>
 
         <nav id="navmenu" class="navmenu">
@@ -91,7 +91,7 @@
       <div class="container" data-aos="fade-up" data-aos-delay="100">
         <div class="row justify-content-start">
           <div class="col-lg-8">
-            <h2>Welcome to SwiftSell</h2>
+            <h2>Welcome to FizSell</h2>
             <p>India's very own premier Mobile Based POS and Sales Enablement Platform.</p>
             <a href="/login" class="btn-get-started">Get Started</a>
           </div>
@@ -104,7 +104,7 @@
       <div class="container" data-aos="fade-up">
         <div class="section-title">
           <h2>Application Features</h2>
-          <p>Explore the powerful modules offered by SwiftSell Mobile POS:</p>
+          <p>Explore the powerful modules offered by FizSell Mobile POS:</p>
         </div>
 
         <div class="row">
@@ -158,8 +158,8 @@
       <section id="features" class="features section">
       <div class="container" data-aos="fade-up">
         <div class="section-title">
-          <h2>Unleash the Power of SwiftSell</h2>
-          <p>Empower your retail operations with SwiftSell’s comprehensive suite of modules, each crafted to streamline your business processes and drive growth.</p>
+          <h2>Unleash the Power of FizSell</h2>
+          <p>Empower your retail operations with FizSell’s comprehensive suite of modules, each crafted to streamline your business processes and drive growth.</p>
         </div>
 
         <div class="row">
@@ -221,8 +221,8 @@
         </div>
 
         <div class="wow-factor text-center mt-5" data-aos="zoom-in">
-          <h3>Wow Factors that Set SwiftSell Apart</h3>
-          <p>SwiftSell is more than just a POS system – it’s your comprehensive business growth partner. From predictive analytics to AI-powered inventory forecasting, SwiftSell integrates cutting-edge technology to optimize your retail operations. Stay ahead of the curve and watch your sales soar!</p>
+          <h3>Wow Factors that Set FizSell Apart</h3>
+          <p>FizSell is more than just a POS system – it’s your comprehensive business growth partner. From predictive analytics to AI-powered inventory forecasting, FizSell integrates cutting-edge technology to optimize your retail operations. Stay ahead of the curve and watch your sales soar!</p>
         </div>
       </div>
     </section>

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.3/css/all.min.css" rel="stylesheet">
-    <title>SwiftSell Mobile POS</title>
+    <title>FizSell Mobile POS</title>
     <style>
         body, html {
             height: 100%;
@@ -39,7 +39,7 @@
 
 <div class="bg-image d-flex justify-content-center align-items-center">
     <div class="login-container col-md-4">
-        <h3 class="text-center mb-4">SwiftSell</h3>
+        <h3 class="text-center mb-4">FizSell</h3>
         <form action="/loginRequest" method="post">
             @csrf
             <div class="mb-3">
