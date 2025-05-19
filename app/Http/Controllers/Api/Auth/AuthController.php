@@ -12,6 +12,7 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
+        $device_id = $request->device_id;
         $user = User::where('email', $request->email)->first();
         if (!empty($user->id) && $user->is_active == 1 && Hash::check($request->password, $user->password)) {
             if($this->checkSubscription($user->id) == false){
@@ -22,6 +23,8 @@ class AuthController extends Controller
                 ], 200);
             }
             $token = $user->createToken('LaravelAuthApp')->accessToken;
+            $user->device_id = $device_id;
+            $user->save();
             return response()->json([
                 'statusCode' => 200,
                 'message' => 'Login successfully',
