@@ -40,13 +40,24 @@
 <div class="bg-image d-flex justify-content-center align-items-center">
     <div class="login-container col-md-4">
         <h3 class="text-center mb-4">FizSell</h3>
+
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <form action="/loginRequest" method="post">
             @csrf
             <div class="mb-3">
                 <label for="email" class="form-label">Email address</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                    <input type="email"  name="email" class="form-control" id="email" placeholder="Enter your email" required>
+                    <input type="email" name="email" class="form-control" id="email" placeholder="Enter your email" value="{{ old('email') }}" required>
                 </div>
             </div>
 

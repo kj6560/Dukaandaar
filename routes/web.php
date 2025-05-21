@@ -10,6 +10,8 @@ use App\Http\Middleware\CheckSubscription;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/login', [AuthController::class, 'login'])->name('backend.login');
+Route::get('/register', [AuthController::class, 'register'])->name('backend.register');
+Route::post('/registerOrg', [AuthController::class, 'registerOrg'])->name('backend.registerOrg');
 Route::post('/loginRequest', [AuthController::class, 'loginRequest'])->name('backend.loginRequest');
 Route::get('/initiate', [PaytmController::class, 'initiate'])->name('initiate.payment');
 Route::post('/payment', [PaytmController::class, 'pay'])->name('make.payment');
