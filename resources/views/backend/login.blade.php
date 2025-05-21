@@ -71,7 +71,7 @@
             </div>
 
             <div class="text-center mt-3">
-                <p class="mb-0">Don't have an account? <a href="#" class="text-primary">Register</a></p>
+                <p class="mb-0">Don't have an account? <a href="/register" class="text-primary">Register</a></p>
             </div>
         </form>
     </div>
