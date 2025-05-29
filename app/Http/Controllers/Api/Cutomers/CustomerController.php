@@ -24,11 +24,9 @@ class CustomerController extends Controller
         $customers = Customer::where('org_id', $request->org_id);
         if (!empty($request->customer_id)) {
             $customers = $customers->where('id', $request->customer_id)->first();
+            $customers->customer_type = "$customers->customer_type";
         } else {
             $customers = $customers->get();
-        }
-        foreach ($customers as $customer ) {
-            $customer->customer_type = "$customer->customer_type";
         }
         return response()->json([
             'statusCode' => 200,
