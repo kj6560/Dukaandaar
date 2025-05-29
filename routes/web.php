@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Backend\AuthController;
 use App\Http\Controllers\Backend\DashboardController;
+use App\Http\Controllers\Backend\ProductController;
 use App\Http\Controllers\Backend\RazorController;
 use App\Http\Controllers\Backend\SubscriptionController;
 use App\Http\Controllers\Frontend\SiteController;
@@ -20,6 +21,7 @@ Route::get('/', [SiteController::class, 'index'])->name('frontend.index');
 
 Route::prefix('admin')->middleware(['auth:web', CheckSubscription::class])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/products', [ProductController::class, 'listProducts'])->name('listProducts');
 
 });
 
