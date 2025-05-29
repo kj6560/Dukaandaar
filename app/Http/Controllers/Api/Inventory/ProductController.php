@@ -17,6 +17,7 @@ class ProductController extends Controller
     public function addProduct(Request $request)
     {
         try {
+            $product_image_path=[];
             $validatedData = $request->validate([
                 'org_id' => 'required|integer',
                 'name' => 'required|string',
@@ -49,11 +50,15 @@ class ProductController extends Controller
         $product->product_mrp = doubleval($request->product_mrp);
         $product->sku = $request->sku;
         $product->is_active = 1;
+        if(!empty($product->images)){
+            $product_image_path = explode(",",$product->images);
+        }
         foreach ($request->file('images') as $image) {
             $path = $image->store('products', 'public');
 
             $product_image_path[] = $path;
         }
+        
         $product->images = implode(",", $product_image_path);
 
         if ($product->save()) {
