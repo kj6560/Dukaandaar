@@ -24,6 +24,9 @@ class ProductSchemeController extends Controller
                 $schemeProducts = json_decode($scheme->bundle_products);
                 foreach ($schemeProducts as $product) {
                     $product = Product::where('id', $product->product_id)->first();
+                    if(empty($product->images)){
+                        $product->images = [];
+                    }
                     $products[] = $product;
                 }
                 unset($scheme->bundle_products);
