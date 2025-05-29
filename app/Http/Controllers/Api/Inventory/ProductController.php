@@ -49,6 +49,12 @@ class ProductController extends Controller
         $product->product_mrp = doubleval($request->product_mrp);
         $product->sku = $request->sku;
         $product->is_active = 1;
+        foreach ($request->file('images') as $image) {
+            $path = $image->store('products', 'public');
+
+            $product_image_path[] = $path;
+        }
+        $product->images = implode(",", $product_image_path);
 
         if ($product->save()) {
             $product_price = ProductPrice::where('product_id', $product->id)->first();
@@ -60,19 +66,8 @@ class ProductController extends Controller
             $product_price->price = doubleval($request->base_price);
             $product_price->uom_id = $request->uom_id;
             $product_price->is_active = 1;
-
+            $product_image_path = [];
             if ($product_price->save()) {
-                // Save uploaded product images
-                // foreach ($request->file('images') as $image) {
-                //     $path = $image->store('products', 'public');
-
-                //     ProductImage::create([
-                //         'product_id' => $product->id,
-                //         'image_path' => $path,
-                //         'is_active' => 1,
-                //     ]);
-                // }
-
                 return response()->json([
                     'statusCode' => 200,
                     'message' => 'Product added successfully',
