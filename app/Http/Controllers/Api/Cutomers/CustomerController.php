@@ -61,6 +61,7 @@ class CustomerController extends Controller
         $customer->customer_address = $request->customer_address;
         $customer->customer_active = $request->customer_active;
         $customer->org_id = $request->org_id;
+        $customer->customer_type = $request->customer_type;
 
         // Handle image upload
         if ($request->hasFile('customer_image')) {
