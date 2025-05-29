@@ -54,15 +54,15 @@ class ProductController extends Controller
 
             if ($product_price->save()) {
                 // Save uploaded product images
-                foreach ($request->file('images') as $image) {
-                    $path = $image->store('products', 'public');
+                // foreach ($request->file('images') as $image) {
+                //     $path = $image->store('products', 'public');
 
-                    \App\Models\ProductImage::create([
-                        'product_id' => $product->id,
-                        'image_path' => $path,
-                        'is_active' => 1,
-                    ]);
-                }
+                //     ProductImage::create([
+                //         'product_id' => $product->id,
+                //         'image_path' => $path,
+                //         'is_active' => 1,
+                //     ]);
+                // }
 
                 return response()->json([
                     'statusCode' => 200,
