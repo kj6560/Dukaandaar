@@ -27,6 +27,9 @@ class CustomerController extends Controller
         } else {
             $customers = $customers->get();
         }
+        foreach ($customers as $customer ) {
+            $customer->customer_type = "$customer->customer_type";
+        }
         return response()->json([
             'statusCode' => 200,
             'message' => 'Customers fetched successfully',
