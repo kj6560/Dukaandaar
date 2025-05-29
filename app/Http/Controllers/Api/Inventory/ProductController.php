@@ -14,9 +14,6 @@ use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
-    use Illuminate\Support\Facades\Storage;
-    use Illuminate\Support\Str;
-
     public function addProduct(Request $request)
     {
         $request->validate([
