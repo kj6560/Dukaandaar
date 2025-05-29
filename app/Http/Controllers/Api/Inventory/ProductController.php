@@ -16,16 +16,25 @@ class ProductController extends Controller
 {
     public function addProduct(Request $request)
     {
-        $request->validate([
-            'org_id' => 'required|integer',
-            'name' => 'required|string',
-            'product_mrp' => 'required|numeric',
-            'sku' => 'required|string',
-            'base_price' => 'required|numeric',
-            'uom_id' => 'required|integer',
-            'images' => 'required|array|min:1',
-            'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048', // max 2MB per image
-        ]);
+        try {
+            $validatedData = $request->validate([
+                'org_id' => 'required|integer',
+                'name' => 'required|string',
+                'product_mrp' => 'required|numeric',
+                'sku' => 'required|string',
+                'base_price' => 'required|numeric',
+                'uom_id' => 'required|integer',
+                'images' => 'required|array|min:1',
+                'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048', // max 2MB per image
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Log or return the exact errors
+            return response()->json([
+                'statusCode' => 422,
+                'message' => 'Validation failed',
+                'errors' => $e->errors(),
+            ], 422);
+        }
 
         $product = Product::where('org_id', $request->org_id)
             ->where('sku', $request->sku)
