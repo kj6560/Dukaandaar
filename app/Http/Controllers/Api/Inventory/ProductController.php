@@ -132,6 +132,7 @@ class ProductController extends Controller
 
     private function formatProductResponse($product)
     {
+        $product_images = !empty($product->images)?explode(',',$product->images):[];
 
         return [
             'id' => $product->id,
@@ -142,6 +143,7 @@ class ProductController extends Controller
             'is_active' => $product->is_active,
             'created_at' => $product->created_at,
             'updated_at' => $product->updated_at,
+            'images' => $product_images,
             'base_price' => optional($product->latestPrice)->price,
             'price' => [
                 'id' => optional($product->latestPrice)->id,
