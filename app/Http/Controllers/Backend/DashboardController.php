@@ -25,6 +25,7 @@ class DashboardController extends Controller
         $inventory = Inventory::where("org_id", $org->id)->count();
         $orders = Orders::where("org_id", $org->id)->count();
         $users = User::where('org_id',$org->id)->where('role','!=',1)->count();
+        $organizations = Organization::where('is_active',1)->count();
         $userId = auth()->user()->id;
         $activeSubscription = UserFeaturePurchase::where('user_id', $userId)
             ->where(function ($query) {
@@ -67,6 +68,7 @@ class DashboardController extends Controller
             'total_inventories' => $inventory,
             'total_orders' => $orders,
             'total_users' => $users,
+            'total_organizations'=>$organizations,
             'showSubscriptionFeatures'=> !empty($activeSubscription->id) ? 1 :0,
         ]);
     }
