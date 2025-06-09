@@ -11,6 +11,7 @@ use App\Models\ProductUom;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
@@ -46,30 +47,27 @@ class ProductController extends Controller
         $product->product_mrp = doubleval($request->product_mrp);
         $product->sku = $request->sku;
         $product->is_active = 1;
-        if (!empty($product->images)) {
-            $product_image_path = explode(",", $product->images);
-        }
-        $images = $request->file('images');
 
-        if (!$images) {
-            $images = $request->file('images[]');
-        }
+        $product_image_path = [];
 
-        // Force to array
-        if ($images instanceof \Illuminate\Http\UploadedFile) {
-            $images = [$images];
+        // 👇 Use the same reliable pattern as profile upload — handle multiple files
+        $files = $request->file('images') ?? $request->file('images[]');
+
+        if ($files instanceof \Illuminate\Http\UploadedFile) {
+            $files = [$files]; // convert to array if single file
         }
 
-        if (is_array($images)) {
-            \Log::info('Received image count: ' . count($images));
-            foreach ($images as $image) {
-                if ($image && $image->isValid()) {
-                    $path = $image->store('products', 'public');
-                    $product_image_path[] = $path;
-                } else {
-                    \Log::warning('Invalid image file detected');
+        if (is_array($files)) {
+            foreach ($files as $file) {
+                if ($file->isValid()) {
+                    $fileName = Str::uuid() . '.' . $file->getClientOriginalExtension();
+                    $filePath = 'products/' . $fileName;
+
+                    $file->storeAs('products', $fileName, 'public');
+                    $product_image_path[] = $filePath;
                 }
             }
+
             $product->images = implode(',', $product_image_path);
         }
 
