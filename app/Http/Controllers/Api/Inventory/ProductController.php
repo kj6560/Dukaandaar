@@ -53,10 +53,13 @@ class ProductController extends Controller
         if (!empty($product->images)) {
             $product_image_path = explode(",", $product->images);
         }
-        foreach ($request->file('images') as $image) {
-            $path = $image->store('products', 'public');
+        $mFiles = $request->file('images');
+        if (!empty($mFiles)) {
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('products', 'public');
 
-            $product_image_path[] = $path;
+                $product_image_path[] = $path;
+            }
         }
 
         $product->images = implode(",", $product_image_path);
