@@ -52,12 +52,13 @@ class ProductController extends Controller
         $images = $request->file('images') ?? $request->file('images[]');
 
         if ($images) {
-            \Log::info('Received files:', $request->allFiles());
             \Log::info('Received input:', $request->all());
             foreach ($images as $image) {
                 $path = $image->store('products', 'public');
                 $product_image_path[] = $path;
             }
+            \Log::info('Received files:', $product_image_path)
+            ;
             $product->images = implode(',', $product_image_path);
         }
 
