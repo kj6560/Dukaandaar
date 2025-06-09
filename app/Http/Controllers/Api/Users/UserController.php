@@ -113,7 +113,7 @@ class UserController extends Controller
             $data['profile_pic'] = $filePath;
         }
         $data['org_id'] = Auth::user()->org_id;
-
+        $data['is_active'] = !empty($data['is_active']) || $data['is_active']==0 ?$data['is_active'] :1;
         $user = User::create($data);
 
         return response()->json([
