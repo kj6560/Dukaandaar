@@ -49,18 +49,19 @@ class ProductController extends Controller
         if (!empty($product->images)) {
             $product_image_path = explode(",", $product->images);
         }
-        $mFiles = $request->file('images');
-        
-        if (!empty($mFiles)) {
-            foreach ($request->file('images') as $image) {
-                $path = $image->store('products', 'public');
+        $images = $request->file('images') ?? $request->file('images[]');
 
+        if ($images) {
+            \Log::info('Received files:', $request->allFiles());
+            \Log::info('Received input:', $request->all());
+            foreach ($images as $image) {
+                $path = $image->store('products', 'public');
                 $product_image_path[] = $path;
             }
-            $product->images = implode(",", $product_image_path);
+            $product->images = implode(',', $product_image_path);
         }
 
-        
+
 
         if ($product->save()) {
             $product_price = ProductPrice::where('product_id', $product->id)->first();
