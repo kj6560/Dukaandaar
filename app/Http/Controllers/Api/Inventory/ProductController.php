@@ -24,9 +24,7 @@ class ProductController extends Controller
                 'product_mrp' => 'required|numeric',
                 'sku' => 'required|string',
                 'base_price' => 'required|numeric',
-                'uom_id' => 'required|integer',
-                'images' => 'required|array|min:1',
-                'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048', // max 2MB per image
+                'uom_id' => 'required|integer'// max 2MB per image
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             // Log or return the exact errors
