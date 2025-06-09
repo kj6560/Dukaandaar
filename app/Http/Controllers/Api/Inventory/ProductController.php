@@ -49,7 +49,7 @@ class ProductController extends Controller
         if (!empty($product->images)) {
             $product_image_path = explode(",", $product->images);
         }
-        $images = $request->file('images') ?? $request->file('images[]');
+        $images = $request->file('images');
 
         if ($images) {
             \Log::info('Received input:', $request->all());
