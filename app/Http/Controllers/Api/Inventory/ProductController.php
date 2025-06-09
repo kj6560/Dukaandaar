@@ -20,11 +20,7 @@ class ProductController extends Controller
             $product_image_path = [];
             $validatedData = $request->validate([
                 'org_id' => 'required|integer',
-                'name' => 'required|string',
-                'product_mrp' => 'required|numeric',
                 'sku' => 'required|string',
-                'base_price' => 'required|numeric',
-                'uom_id' => 'required|integer'// max 2MB per image
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             // Log or return the exact errors
@@ -54,15 +50,17 @@ class ProductController extends Controller
             $product_image_path = explode(",", $product->images);
         }
         $mFiles = $request->file('images');
+        
         if (!empty($mFiles)) {
             foreach ($request->file('images') as $image) {
                 $path = $image->store('products', 'public');
 
                 $product_image_path[] = $path;
             }
+            $product->images = implode(",", $product_image_path);
         }
 
-        $product->images = implode(",", $product_image_path);
+        
 
         if ($product->save()) {
             $product_price = ProductPrice::where('product_id', $product->id)->first();
