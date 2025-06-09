@@ -78,7 +78,7 @@ class UserController extends Controller
                 'errors' => 'org_id'
             ], 400);
         }
-        $orgUsers = User::where('org_id', $org_id)->where('role', '!=', 1)->where('is_active',1)->get();
+        $orgUsers = User::where('org_id', $org_id)->where('role', '!=', 1)->where('is_active', 1)->get();
         return response()->json([
             'success' => true,
             'message' => 'Data Fetched Successfully',
@@ -106,11 +106,22 @@ class UserController extends Controller
                 'data' => []
             ], 422);
         }
-        $subsFeaturesDetails = UserFeaturePurchase::join('subs_features_details','subs_features_details.id','=','user_features_purchases.feature_id')
-        ->where('user_features_purchases.org_id',Auth::user()->org_id)
-        ->where('subs_features_details.title','=','Users')
-        ->first();
-        dd($subsFeaturesDetails);
+        $subsFeaturesDetails = UserFeaturePurchase::join('subs_features_details', 'subs_features_details.subs_features_id', '=', 'user_feature_purchases.id')
+            ->where('user_feature_purchases.org_id', Auth::user()->org_id)
+            ->where('subs_features_details.title', '=', 'Users')
+            ->first();
+        $desc = json_decode($subsFeaturesDetails->description);
+        $total_user_capacity = $desc->user;
+        $total_available_users = User::where('org_id', Auth::user()->org_id)->where("is_active",1)->count();
+
+        if ($total_user_capacity <= $total_available_users) {
+            return response()->json([
+                'success' => false,
+                'message' => "Maximum user limit reached.Plz delete some users or contact administrator",
+                'data' => []
+            ], 422);
+        }
+
         $data = $request->only(['name', 'email', 'number', 'role', 'is_active']);
         $data['password'] = Hash::make($request->password);
 
@@ -119,7 +130,7 @@ class UserController extends Controller
             $data['profile_pic'] = $filePath;
         }
         $data['org_id'] = Auth::user()->org_id;
-        $data['is_active'] = !empty($data['is_active']) || $data['is_active']==0 ?$data['is_active'] :1;
+        $data['is_active'] = !empty($data['is_active']) || $data['is_active'] == 0 ? $data['is_active'] : 1;
         $user = User::create($data);
 
         return response()->json([
