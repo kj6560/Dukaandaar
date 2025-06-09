@@ -17,7 +17,7 @@ class ProductController extends Controller
     public function addProduct(Request $request)
     {
         try {
-            $product_image_path=[];
+            $product_image_path = [];
             $validatedData = $request->validate([
                 'org_id' => 'required|integer',
                 'name' => 'required|string',
@@ -29,10 +29,12 @@ class ProductController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             // Log or return the exact errors
             return response()->json([
-                'statusCode' => 422,
-                'message' => 'Validation failed',
-                'errors' => $e->errors(),
-            ], 422);
+                'statusCode' => 500,
+                'message' => 'Server Error',
+                'error' => $e->getMessage(), // Show actual error
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+            ], 500);
         }
 
         $product = Product::where('org_id', $request->org_id)
@@ -48,15 +50,15 @@ class ProductController extends Controller
         $product->product_mrp = doubleval($request->product_mrp);
         $product->sku = $request->sku;
         $product->is_active = 1;
-        if(!empty($product->images)){
-            $product_image_path = explode(",",$product->images);
+        if (!empty($product->images)) {
+            $product_image_path = explode(",", $product->images);
         }
         foreach ($request->file('images') as $image) {
             $path = $image->store('products', 'public');
 
             $product_image_path[] = $path;
         }
-        
+
         $product->images = implode(",", $product_image_path);
 
         if ($product->save()) {
@@ -130,7 +132,7 @@ class ProductController extends Controller
 
     private function formatProductResponse($product)
     {
-        $product_images = !empty($product->images)?explode(',',$product->images):[];
+        $product_images = !empty($product->images) ? explode(',', $product->images) : [];
 
         return [
             'id' => $product->id,
