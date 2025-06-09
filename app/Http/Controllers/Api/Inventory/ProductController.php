@@ -49,24 +49,30 @@ class ProductController extends Controller
         if (!empty($product->images)) {
             $product_image_path = explode(",", $product->images);
         }
-        $images = $request->file('images') ?? $request->file('images[]');
+        $images = $request->file('images');
+
+        if (!$images) {
+            $images = $request->file('images[]');
+        }
 
         // Force to array
-        if (!is_array($images)) {
+        if ($images instanceof \Illuminate\Http\UploadedFile) {
             $images = [$images];
         }
 
-        if ($images && count($images)) {
-            \Log::info('Images found:', ['count' => count($images)]);
+        if (is_array($images)) {
+            \Log::info('Received image count: ' . count($images));
             foreach ($images as $image) {
                 if ($image && $image->isValid()) {
                     $path = $image->store('products', 'public');
                     $product_image_path[] = $path;
+                } else {
+                    \Log::warning('Invalid image file detected');
                 }
             }
-            \Log::info('Uploaded images:', $product_image_path);
             $product->images = implode(',', $product_image_path);
         }
+
 
 
 
