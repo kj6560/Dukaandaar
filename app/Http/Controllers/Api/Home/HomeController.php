@@ -14,7 +14,7 @@ class HomeController extends Controller
 {
     public function fetchKpi(Request $request)
     {
-        if (!$this->checkSubscription(Auth::user()->id) || empty($request->device_id)) {
+        if (!$this->checkSubscription(Auth::user()->org_id) || empty($request->device_id)) {
             return response()->json([
                 'status' => 'error',
                 'data' => [

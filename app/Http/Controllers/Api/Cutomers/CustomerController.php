@@ -11,7 +11,7 @@ class CustomerController extends Controller
 {
     public function fetchCustomers(Request $request)
     {
-        if($this->checkSubscription(Auth::user()->id) == false){
+        if($this->checkSubscription(Auth::user()->org_id) == false){
             return response()->json([
                 'statusCode' => 202,
                 'message' => 'You don\'t have an active subscription. Plz contact admin',

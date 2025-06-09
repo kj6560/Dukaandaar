@@ -15,7 +15,7 @@ class AuthController extends Controller
         $device_id = $request->device_id;
         $user = User::where('email', $request->email)->first();
         if (!empty($user->id) && $user->is_active == 1 && Hash::check($request->password, $user->password)) {
-            if($this->checkSubscription($user->id) == false){
+            if($this->checkSubscription($user->org_id) == false){
                 return response()->json([
                     'statusCode' => 202,
                     'message' => 'You don\'t have an active subscription. Plz contact admin',

@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\DB;
 
 abstract class Controller
 {
-    public function checkSubscription($userId)
+    public function checkSubscription($orgId)
     {
-        $hasActiveSubscription = UserFeaturePurchase::where('user_id', $userId)
+        $hasActiveSubscription = UserFeaturePurchase::where('org_id', $orgId)
             ->where(function ($query) {
                 $query->whereNull('expires_at') // Lifetime purchase
                     ->orWhere('expires_at', '>', now()); // Active subscription

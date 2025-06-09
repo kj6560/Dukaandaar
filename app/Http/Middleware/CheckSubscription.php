@@ -19,7 +19,7 @@ class CheckSubscription
         $user = auth()->user();
         $role = $user->role;
 
-        $activeSubscription = UserFeaturePurchase::where('user_id', $user->id)
+        $activeSubscription = UserFeaturePurchase::where('org_id', $user->org_id)
             ->where(function ($query) {
                 $query->whereNull('expires_at')
                     ->orWhere('expires_at', '>', now());
