@@ -119,6 +119,13 @@ echo Auth::user()->role == 1 ? "Super User" : "User";
 							<span class="badge badge-count">5</span>
 						</a>
 					</li>
+					<li class="nav-item active">
+						<a href="/admin/dashboard/organizations">
+							<i class="la la-dashboard"></i>
+							<p>Organizations</p>
+							<span class="badge badge-count">5</span>
+						</a>
+					</li>
 					<!-- <li class="nav-item">
 						<a href="components.html">
 							<i class="la la-table"></i>

@@ -24,10 +24,10 @@ class DashboardController extends Controller
         $products = Product::where("org_id", $org->id)->count();
         $inventory = Inventory::where("org_id", $org->id)->count();
         $orders = Orders::where("org_id", $org->id)->count();
-        $users = User::where('org_id',$org->id)->where('role','!=',1)->count();
-        $organizations = Organization::where('is_active',1)->count();
+        $users = User::where('org_id', $org->id)->where('role', '!=', 1)->count();
+        $organizations = Organization::where('is_active', 1)->count();
         $userId = auth()->user()->id;
-        $activeSubscription = UserFeaturePurchase::where('user_id', $userId)
+        $activeSubscription = UserFeaturePurchase::where('org_id', auth()->user()->org_id)
             ->where(function ($query) {
                 $query->whereNull('expires_at')
                     ->orWhere('expires_at', '>', now());
@@ -42,13 +42,13 @@ class DashboardController extends Controller
                     'details' => function ($query) {
                         $query->where('is_active', 1);
                     },
-                    
+
                 ])->get();
 
                 foreach ($features as $feature) {
                     foreach ($feature->details as $detail) {
                         $flattened[] = [
-                            
+
                             'title' => $detail->title,
                             'detail_description' => $detail->description,
                             'detail_price' => $detail->price
@@ -68,10 +68,35 @@ class DashboardController extends Controller
             'total_inventories' => $inventory,
             'total_orders' => $orders,
             'total_users' => $users,
-            'total_organizations'=>$organizations,
-            'showSubscriptionFeatures'=> !empty($activeSubscription->id) ? 1 :0,
+            'total_organizations' => $organizations,
+            'showSubscriptionFeatures' => !empty($activeSubscription->id) ? 1 : 0,
         ]);
     }
+    public function listOrganizations(Request $request)
+    {
+        if ($request->ajax()) {
+            $data = Organization::select(['id', 'org_name', 'org_email', 'org_number', 'org_address', 'is_active', 'created_at']);
+            return DataTables::of($data)
+                ->addColumn('status', function ($row) {
+                    return $row->is_active ? 'Active' : 'Inactive';
+                })
+                ->rawColumns(['status'])
+                ->make(true);
+        }
+        return view('backend.dashboard.listOrganizations');
+    }
+    public function toggleStatus(Request $request, $id)
+    {
+        $user_feature_purchases = UserFeaturePurchase::where('org_id', $id)->first();
+        if (empty($user_feature_purchases)) {
+            return response()->json(['success' => false]);
+        }
+        $org = Organization::findOrFail($id);
+        $org->is_active = $request->is_active;
+        if ($org->save()) {
+            return response()->json(['success' => true]);
+        }
+        return response()->json(['success' => false]);
 
-
+    }
 }

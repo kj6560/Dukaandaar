@@ -21,7 +21,9 @@ Route::get('/', [SiteController::class, 'index'])->name('frontend.index');
 
 Route::prefix('admin')->middleware(['auth:web', CheckSubscription::class])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/organizations', [DashboardController::class, 'listOrganizations'])->name('dashboard.listorganizations');
     Route::get('/products', [ProductController::class, 'listProducts'])->name('listProducts');
+    Route::post('/dashboard/organizations/toggleStatus/{id}/{status}', [DashboardController::class, 'toggleStatus'])->name('organizations.toggleStatus');
 
 });
 
