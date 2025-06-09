@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\Users;
 
 use App\Http\Controllers\Controller;
+use App\Models\SubsFeaturesDetail;
+use App\Models\UserFeaturePurchase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
@@ -104,7 +106,11 @@ class UserController extends Controller
                 'data' => []
             ], 422);
         }
-
+        $subsFeaturesDetails = UserFeaturePurchase::join('subs_features_details','subs_features_details.id','=','user_features_purchases.feature_id')
+        ->where('user_features_purchases.org_id',Auth::user()->org_id)
+        ->where('subs_features_details.title','=','Users')
+        ->first();
+        dd($subsFeaturesDetails);
         $data = $request->only(['name', 'email', 'number', 'role', 'is_active']);
         $data['password'] = Hash::make($request->password);
 
