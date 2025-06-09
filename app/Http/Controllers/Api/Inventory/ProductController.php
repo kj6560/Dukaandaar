@@ -49,16 +49,22 @@ class ProductController extends Controller
         if (!empty($product->images)) {
             $product_image_path = explode(",", $product->images);
         }
-        $images = $request->file('images');
+        $images = $request->file('images') ?? $request->file('images[]');
 
-        if ($images) {
-            \Log::info('Received input:', $request->all());
+        // Force to array
+        if (!is_array($images)) {
+            $images = [$images];
+        }
+
+        if ($images && count($images)) {
+            \Log::info('Images found:', ['count' => count($images)]);
             foreach ($images as $image) {
-                $path = $image->store('products', 'public');
-                $product_image_path[] = $path;
+                if ($image && $image->isValid()) {
+                    $path = $image->store('products', 'public');
+                    $product_image_path[] = $path;
+                }
             }
-            \Log::info('Received files:', $product_image_path)
-            ;
+            \Log::info('Uploaded images:', $product_image_path);
             $product->images = implode(',', $product_image_path);
         }
 
