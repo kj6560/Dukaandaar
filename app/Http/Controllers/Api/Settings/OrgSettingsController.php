@@ -70,8 +70,7 @@ class OrgSettingsController extends Controller
                 'org_id' => $setting->org_id,
                 'settings' => [
                     [
-                        $setting->set_key => $setting->set_value,
-                        'is_active' => $setting->is_active
+                        $setting->set_key => $setting->set_value
                     ]
                 ]
             ];
