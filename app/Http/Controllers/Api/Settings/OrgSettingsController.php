@@ -63,7 +63,7 @@ class OrgSettingsController extends Controller
     public function fetchOrgSettings(Request $request)
     {
         $org_id = Auth::user()->org_id;
-        $org_settings = OrgSettings::where('org_id', $org_id)->get();
+        $org_settings = OrgSettings::where('org_id', $org_id)->where('is_active',1)->get();
         $formatted = $org_settings->map(function ($setting) {
             return [
                 'id' => $setting->id,
