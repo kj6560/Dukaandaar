@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\Inventory\InventoryController;
 use App\Http\Controllers\Api\Inventory\ProductController;
 use App\Http\Controllers\Api\Orders\OrderController;
 use App\Http\Controllers\Api\schemes\ProductSchemeController;
+use App\Http\Controllers\Api\Settings\OrgSettingsController;
 use App\Http\Controllers\Api\Users\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -59,4 +60,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/fetchUsersByOrg', [UserController::class, 'fetchUsersByOrg']);
     Route::post('/createNewUser', [UserController::class, 'createNewUser']);
     Route::get('/deleteUser',[UserController::class,'deleteUser']);
+
+    //org settings
+    Route::post('/updateOrgSettings', [OrgSettingsController::class, 'updateOrgSettings']);
 });
