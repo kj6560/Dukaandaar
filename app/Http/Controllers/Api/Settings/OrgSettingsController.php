@@ -42,9 +42,11 @@ class OrgSettingsController extends Controller
                 $settings = new OrgSettings();
                 $settings->org_id = $org_id;
             }
+            $settings->set_key = $key;
             $settings->set_value = $value;
             $settings->is_active = $request->is_active ?? 1;
             if ($settings->save()) {
+                dd($settings);
                 return response()->json([
                     'statusCode' => 200,
                     'message' => 'Settings updated!',
