@@ -40,6 +40,7 @@ class OrgSettingsController extends Controller
             $settings = OrgSettings::where('set_key', $key)->where('org_id', $org_id)->first();
             if (empty($settings->id)) {
                 $settings = new OrgSettings();
+                $settings->org_id = $org_id;
             }
             $settings->set_value = $value;
             $settings->is_active = $request->is_active ?? 1;
