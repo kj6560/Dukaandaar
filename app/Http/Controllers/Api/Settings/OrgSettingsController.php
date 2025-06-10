@@ -64,10 +64,22 @@ class OrgSettingsController extends Controller
     {
         $org_id = Auth::user()->org_id;
         $org_settings = OrgSettings::where('org_id', $org_id)->get();
+        $formatted = $org_settings->map(function ($setting) {
+            return [
+                'id' => $setting->id,
+                'org_id' => $setting->org_id,
+                'settings' => [
+                    [
+                        $setting->set_key => $setting->set_value,
+                        'is_active' => $setting->is_active
+                    ]
+                ]
+            ];
+        });
         return response()->json([
             'statusCode' => 200,
             'message' => 'Settings fetched successfuly!',
-            'data' => $org_settings
+            'data' => $formatted
         ], 200);
     }
     public function fetchCurrencies(Request $request)
