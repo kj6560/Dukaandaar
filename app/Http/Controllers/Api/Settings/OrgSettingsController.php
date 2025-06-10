@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Settings;
 
 use App\Http\Controllers\Controller;
+use App\Models\Currency;
 use App\Models\OrgSettings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -46,7 +47,6 @@ class OrgSettingsController extends Controller
             $settings->set_value = $value;
             $settings->is_active = $request->is_active ?? 1;
             if ($settings->save()) {
-                dd($settings);
                 return response()->json([
                     'statusCode' => 200,
                     'message' => 'Settings updated!',
@@ -59,5 +59,24 @@ class OrgSettingsController extends Controller
             'message' => 'Some Error occured!',
             'data' => []
         ], 400);
+    }
+    public function fetchOrgSettings(Request $request)
+    {
+        $org_id = Auth::user()->org_id;
+        $org_settings = OrgSettings::where('org_id', $org_id)->get();
+        return response()->json([
+            'statusCode' => 200,
+            'message' => 'Settings fetched successfuly!',
+            'data' => $org_settings
+        ], 200);
+    }
+    public function fetchCurrencies(Request $request)
+    {
+        $currencies = Currency::where('is_active', 1)->get();
+        return response()->json([
+            'statusCode' => 200,
+            'message' => 'Currencies fetched successfuly!',
+            'data' => $currencies
+        ], 200);
     }
 }
