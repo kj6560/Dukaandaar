@@ -89,7 +89,7 @@ class OrgSettingsController extends Controller
         return response()->json([
             'statusCode' => 200,
             'message' => 'Currencies fetched successfuly!',
-            'selected' => $currencySetting->id ?? 0,
+            'selected' => $currencySetting->set_value ?? 0,
             'data' => $currencies
         ], 200);
     }
