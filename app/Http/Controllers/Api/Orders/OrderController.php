@@ -78,6 +78,7 @@ class OrderController extends Controller
 
         if (!empty($request->order_id)) {
             $orders = $orders->where('orders.id', $request->order_id)->first();
+            $organization = Organization::where('id',$org_id)->first();
             $orders->order_details = json_encode($orders->order_details);
             $invoiceText = "       *** INVOICE ***       \n";
             $invoiceText .= "----------------------------\n";
@@ -87,8 +88,7 @@ class OrderController extends Controller
             $orderDetails = is_string($orders->order_details)
                 ? json_decode(json_decode($orders->order_details), true)
                 : $orders->order_details;
-
-            $invoiceText = "INVOICE\n";
+            $invoiceText .= "Organization: " . ($orders->org_name ?? 'Customer') . "\n";
             $invoiceText .= "----------------------------\n";
             $invoiceText .= "Customer: " . ($orders->customer_name ?? 'Customer') . "\n";
             $invoiceText .= "Order ID: {$orders->order_id}\n";
