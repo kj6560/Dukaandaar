@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Api\Orders;
 
 use App\Http\Controllers\Controller;
+use App\Models\Currency;
 use App\Models\Inventory;
 use App\Models\InventoryTransaction;
 use App\Models\OrderDetails;
 use App\Models\Orders;
 use App\Models\Organization;
+use App\Models\OrgSettings;
 use App\Models\Product;
 use App\Models\ProductScheme;
 use App\Models\User;
@@ -81,6 +83,9 @@ class OrderController extends Controller
             $orders = $orders->where('orders.id', $request->order_id)->first();
             $organization = Organization::where('id',$org_id)->first();
             $orders->order_details = json_encode($orders->order_details);
+            $currencySetting = OrgSettings::where('org_id',$organization->id)->first();
+            $currencySetting = $currencySetting->set_value;
+            $currency = Currency::where('id',$currencySetting)->first();
             $orderDetails = json_decode(json_decode($orders->order_details), true);
             // $invoiceText = "       *** INVOICE ***       \n";
             // $invoiceText .= "----------------------------\n";
@@ -118,6 +123,7 @@ class OrderController extends Controller
                 'order' => $orders,
                 'orderDetails' => $orderDetails,
                 'organization' => $organization,
+                'currency' =>$currency->symbol
             ])->render();
             //$orders->print_invoice = $invoiceText;
         } else {
