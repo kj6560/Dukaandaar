@@ -1,4 +1,6 @@
-       *** INVOICE ***       
+
+----------------------------
+           *** INVOICE ***       
 ----------------------------
 Order ID   : {{ $order->order_id }}
 Date       : {{ \Carbon\Carbon::parse($order->order_date)->format('d M Y H:i') }}
@@ -6,6 +8,7 @@ Date       : {{ \Carbon\Carbon::parse($order->order_date)->format('d M Y H:i') }
 Org        : {{ $organization->org_name ?? 'Customer' }}
 Customer   : {{ $order->customer_name ?? 'Customer' }}
 ----------------------------
+
 @foreach ($orderDetails as $item)
 {{ Str::limit($item['product_name'], 20) }} x{{ $item['quantity'] }}
 Price      : ₹{{ number_format($item['base_price'], 2) }}
@@ -21,4 +24,6 @@ Net Total  : ₹{{ number_format($order->net_total, 2) }}
 
 ----------------------------
 Thank you for your purchase!
+----------------------------
+
 ----------------------------
