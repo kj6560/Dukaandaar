@@ -94,7 +94,11 @@ class DashboardController extends Controller
         $org = Organization::findOrFail($id);
         $org->is_active = $request->is_active;
         if ($org->save()) {
-            return response()->json(['success' => true]);
+            $user_feature_purchases->expired = $request->is_active;
+            if ($user_feature_purchases->save()) {
+                return response()->json(['success' => true]);
+            }
+
         }
         return response()->json(['success' => false]);
 
