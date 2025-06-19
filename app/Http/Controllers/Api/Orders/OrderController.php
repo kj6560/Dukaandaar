@@ -88,7 +88,7 @@ class OrderController extends Controller
             $orderDetails = is_string($orders->order_details)
                 ? json_decode(json_decode($orders->order_details), true)
                 : $orders->order_details;
-            $invoiceText .= "Organization: " . ($orders->org_name ?? 'Customer') . "\n";
+            $invoiceText .= "Organization: " . ($organization->org_name ?? 'Customer') . "\n";
             $invoiceText .= "----------------------------\n";
             $invoiceText .= "Customer: " . ($orders->customer_name ?? 'Customer') . "\n";
             $invoiceText .= "Order ID: {$orders->order_id}\n";
