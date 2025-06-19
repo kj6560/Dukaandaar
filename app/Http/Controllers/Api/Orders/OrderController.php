@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\View;
 
 class OrderController extends Controller
 {
@@ -80,8 +81,7 @@ class OrderController extends Controller
             $orders = $orders->where('orders.id', $request->order_id)->first();
             $organization = Organization::where('id',$org_id)->first();
             $orders->order_details = json_encode($orders->order_details);
-            $orderDetails = is_string($orders->order_details)
-                 ? json_decode(json_decode($orders->order_details), true);
+            $orderDetails = is_string($orders->order_details)?? json_decode(json_decode($orders->order_details), true);
             // $invoiceText = "       *** INVOICE ***       \n";
             // $invoiceText .= "----------------------------\n";
             // $invoiceText .= "Order ID: {$orders->order_id}\n";
