@@ -65,5 +65,6 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/updateOrgSettings', [OrgSettingsController::class, 'updateOrgSettings']);
     Route::get('/fetchOrgSettings', [OrgSettingsController::class, 'fetchOrgSettings']);
     Route::get('/fetchCurrencies', [OrgSettingsController::class, 'fetchCurrencies']);
+    Route::post('/setCurrency', [OrgSettingsController::class, 'setCurrency']);
     
 });

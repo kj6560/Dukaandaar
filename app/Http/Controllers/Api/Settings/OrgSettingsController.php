@@ -93,4 +93,33 @@ class OrgSettingsController extends Controller
             'data' => $currencies
         ], 200);
     }
+    public function setCurrency(Request $request)
+    {
+        $org_id = $request->org_id;
+        $currency_id = $request->currency_id;
+        if (empty($org_id)) {
+            return response()->json([
+                'statusCode' => 400,
+                'message' => 'Org cannot be empty!',
+                'data' => []
+            ], 400);
+        }
+
+        $currencySetting = OrgSettings::where('set_key', 'org_currency')->where('org_id', $org_id)->where('is_active', 1)->first();
+        if (empty($currencySetting)) {
+            $currencySetting = new OrgSettings();
+            $currencySetting->is_active = 1;
+            $currencySetting->org_id = $org_id;
+            $currencySetting->setKey = "org_currency";
+        }
+        $currencySetting->setValue = $currency_id;
+        if ($currencySetting->save()) {
+            return response()->json([
+                'statusCode' => 200,
+                'message' => 'Currencies saved successfuly!',
+                'selected' => $currencySetting->set_value ?? 0,
+                'data' => Currency::where('is_active', 1)->orderBy('currency', 'asc')->get()
+            ], 200);
+        }
+    }
 }
