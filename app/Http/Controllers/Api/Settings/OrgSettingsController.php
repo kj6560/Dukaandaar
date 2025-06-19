@@ -110,9 +110,9 @@ class OrgSettingsController extends Controller
             $currencySetting = new OrgSettings();
             $currencySetting->is_active = 1;
             $currencySetting->org_id = $org_id;
-            $currencySetting->setKey = "org_currency";
+            $currencySetting->set_key = "org_currency";
         }
-        $currencySetting->setValue = $currency_id;
+        $currencySetting->set_value = $currency_id;
         if ($currencySetting->save()) {
             return response()->json([
                 'statusCode' => 200,
