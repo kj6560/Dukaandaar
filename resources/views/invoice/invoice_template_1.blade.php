@@ -18,7 +18,10 @@ Order Total: ₹{{ number_format($order->total_order_value, 2) }}
 Discount   : ₹{{ number_format($order->total_order_discount, 2) }}
 Tax        : ₹{{ number_format($order->tax, 2) }}
 Net Total  : ₹{{ number_format($order->net_total, 2) }}
+
 ----------------------------
 Thank you for your purchase!
 ----------------------------
 
+
+----------------------------
