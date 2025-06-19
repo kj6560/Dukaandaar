@@ -22,6 +22,3 @@ Net Total  : ₹{{ number_format($order->net_total, 2) }}
 ----------------------------
 Thank you for your purchase!
 ----------------------------
-
-
-----------------------------
