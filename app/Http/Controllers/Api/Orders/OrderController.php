@@ -90,7 +90,7 @@ class OrderController extends Controller
 
             $invoiceText = "INVOICE\n";
             $invoiceText .= "----------------------------\n";
-            $invoiceText .= "Customer: {$orders->customer_name}\n";
+            $invoiceText .= "Customer: " . ($orders->customer_name ?? 'Customer') . "\n";
             $invoiceText .= "Order ID: {$orders->order_id}\n";
             $invoiceText .= "----------------------------\n";
 
