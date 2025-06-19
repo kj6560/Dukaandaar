@@ -112,8 +112,6 @@ class OrderController extends Controller
             $invoiceText .= "----------------------------\n";
             $invoiceText .= "                            \n";
             $invoiceText .= "----------------------------\n";
-            $invoiceText .= "                            \n";
-            $invoiceText .= "----------------------------\n";
 
             $orders->print_invoice = $invoiceText;
         } else {
