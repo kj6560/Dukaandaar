@@ -109,7 +109,7 @@ class OrderController extends Controller
             $invoiceText .= "Net Total: ₹" . number_format($orders->net_total, 2) . "\n";
             $invoiceText .= "----------------------------\n";
             $invoiceText .= "Thank you for your purchase!\n";
-            $invoiceText .= "                            \n";
+            $invoiceText .= "----------------------------\n";
             $invoiceText .= "                            \n";
             $invoiceText .= "----------------------------\n";
             $invoiceText .= "                            \n";
