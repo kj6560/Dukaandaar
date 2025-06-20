@@ -24,6 +24,7 @@ Route::prefix('admin')->middleware(['auth:web', CheckSubscription::class])->grou
     Route::get('/dashboard/organizations', [DashboardController::class, 'listOrganizations'])->name('dashboard.listorganizations');
     Route::get('/products', [ProductController::class, 'listProducts'])->name('listProducts');
     Route::post('/dashboard/organizations/toggleStatus/{id}/{status}', [DashboardController::class, 'toggleStatus'])->name('organizations.toggleStatus');
+    
 
 });
 
@@ -31,6 +32,9 @@ Route::prefix('admin')->middleware(['auth:web'])->group(function () {
     Route::get('/subscription/purchase', [SubscriptionController::class, 'showPurchasePage'])->name('subscription.purchase');
     Route::get('/subscription/purchase/{id}', [SubscriptionController::class, 'purchase'])->name('subscription.purchase.id');
     Route::get('/subscription/payment/{id}', [SubscriptionController::class, 'payment'])->name('subscription.payment');
+    Route::get("/dashboard/org_detail/{id}",[DashboardController::class,'org_detail'])->name('organizations.detail');
+    Route::post("/dashboard/organization/save",[DashboardController::class,'saveOrg'])->name('organizations.save');
+    Route::post("/dashboard/saveUserFeaturePurchase",[DashboardController::class,'saveUserFeaturePurchase'])->name('organizations.saveUserFeaturePurchase');
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 Route::middleware(['auth:web'])->group(function () {

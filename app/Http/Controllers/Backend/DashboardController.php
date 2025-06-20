@@ -103,4 +103,48 @@ class DashboardController extends Controller
         return response()->json(['success' => false]);
 
     }
+    public function org_detail(Request $request, $id)
+    {
+        $organization = Organization::where('id', $id)->first();
+        $user_feature_purchases = UserFeaturePurchase::where('org_id', $id)->first();
+        $subs_features = SubsFeature::all();
+        return view('backend.dashboard.org_detail', ['organization' => $organization, 'purchase' => $user_feature_purchases, 'features' => $subs_features]);
+    }
+    public function saveOrg(Request $request)
+    {
+        $data = $request->all();
+        if (!empty($data['id'])) {
+            $org = Organization::where('id', $data['id'])->first();
+        } else {
+            $org = new Organization();
+        }
+        $org->org_name = $data['org_name'];
+        $org->org_email = $data['org_email'];
+        $org->org_number = $data['org_number'];
+        $org->org_address = $data['org_address'];
+        $org->is_active = $data['is_active'];
+        if ($org->save()) {
+            return redirect()->back()->with('success', "success");
+        }
+    }
+    public function saveUserFeaturePurchase(Request $request)
+    {
+        $data = $request->all();
+        if (!empty($data['id'])) {
+            $userFeaturePurchase = UserFeaturePurchase::where('id', $data['id'])->first();
+        } else {
+            $userFeaturePurchase = new UserFeaturePurchase();
+            $userFeaturePurchase->org_id = $data['org_id'];
+        }
+        $userFeaturePurchase->feature_id = $data['feature_id'];
+        $userFeaturePurchase->transaction_id = $data['transaction_id'];
+        $userFeaturePurchase->purchased_at = $data['purchased_at'];
+        $userFeaturePurchase->expires_at = $data['expires_at'];
+        $userFeaturePurchase->expired = $data['expired'];
+        if ($userFeaturePurchase->save()) {
+            return redirect()->back()->with('success', "success");
+        } else {
+            return redirect()->back()->with('error', 'some error');
+        }
+    }
 }
