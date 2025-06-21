@@ -30,6 +30,7 @@ class Subscription
         }else{
             return response()->json([
             'statusCode' => 200,
+            'subscriptionError' =>1,
             'message' => "You don't have an active subscription plz contact Admin",
             'data' => [],
         ], 200);
