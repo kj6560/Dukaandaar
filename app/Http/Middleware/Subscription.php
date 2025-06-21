@@ -29,10 +29,10 @@ class Subscription
             return $next($request);
         }else{
             return response()->json([
-            'statusCode' => 200,
+            'statusCode' => 503,
             'message' => "You don't have an active subscription plz contact Admin",
             'data' => [],
-        ], 200);
+        ], 503);
         }
     }
 }
