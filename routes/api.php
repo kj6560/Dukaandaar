@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\Orders\OrderController;
 use App\Http\Controllers\Api\schemes\ProductSchemeController;
 use App\Http\Controllers\Api\Settings\OrgSettingsController;
 use App\Http\Controllers\Api\Users\UserController;
+use App\Http\Middleware\Subscription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,7 +21,7 @@ Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::get('/registerOrg', [OrgController::class, 'register']);
 Route::get('/registerUser', [AuthController::class, 'register']);
 Route::get('/logout', [AuthController::class, 'logout']);
-Route::middleware('auth:api')->group(function () {
+Route::middleware(['auth:api',Subscription::class])->group(function () {
     //Home
     Route::get('/fetchKpi', [HomeController::class, 'fetchKpi']);
     //Inventory
