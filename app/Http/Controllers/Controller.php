@@ -15,7 +15,7 @@ abstract class Controller
                 $query->whereNull('expires_at') // Lifetime purchase
                     ->orWhere('expires_at', '>', now()); // Active subscription
             })
-            ->where('expired', 1) // Fix: Use `where()` instead of `andWhere()`
+            ->where('expired', 0) // Fix: Use `where()` instead of `andWhere()`
             ->exists();
         return $hasActiveSubscription;
     }
