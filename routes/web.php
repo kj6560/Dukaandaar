@@ -5,6 +5,7 @@ use App\Http\Controllers\Backend\DashboardController;
 use App\Http\Controllers\Backend\ProductController;
 use App\Http\Controllers\Backend\RazorController;
 use App\Http\Controllers\Backend\SubscriptionController;
+use App\Http\Controllers\Backend\UserController;
 use App\Http\Controllers\Frontend\SiteController;
 use App\Http\Controllers\PaytmController;
 use App\Http\Middleware\CheckSubscription;
@@ -35,6 +36,8 @@ Route::prefix('admin')->middleware(['auth:web'])->group(function () {
     Route::get("/dashboard/org_detail/{id}",[DashboardController::class,'org_detail'])->name('organizations.detail');
     Route::post("/dashboard/organization/save",[DashboardController::class,'saveOrg'])->name('organizations.save');
     Route::post("/dashboard/saveUserFeaturePurchase",[DashboardController::class,'saveUserFeaturePurchase'])->name('organizations.saveUserFeaturePurchase');
+    Route::get('/dashboard/users', [UserController::class, 'index'])->name('dashboard.listusers');
+    Route::post('/dashboard/users/toggleStatus/{user_id}/{status}', [UserController::class, 'toggleStatus'])->name('dashboard.toggleuserstatus');
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 Route::middleware(['auth:web'])->group(function () {

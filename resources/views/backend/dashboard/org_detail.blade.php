@@ -52,7 +52,7 @@
                         <button type="submit" class="btn btn-success">
                             <?= isset($organization->id) && $organization->id ? 'Update' : 'Create' ?>
                         </button>
-                        <a href="organization_list.php" class="btn btn-secondary">Cancel</a>
+                        
                     </form>
                 </div>
             </div>
@@ -120,7 +120,7 @@
                         <!-- Submit Button -->
                         <button type="submit"
                             class="btn btn-success"><?= isset($editing) && $editing ? 'Update' : 'Submit' ?></button>
-                        <a href="user_feature_purchases_list.php" class="btn btn-secondary">Cancel</a>
+                        
                     </form>
                 </div>
             </div>
