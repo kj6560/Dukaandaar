@@ -1,6 +1,6 @@
 
 ----------------------------
-           *** INVOICE ***       
+    *** INVOICE ***       
 ----------------------------
 Order ID   : {{ $order->order_id }}
 Date       : {{ \Carbon\Carbon::parse($order->order_date)->format('d M Y H:i') }}
