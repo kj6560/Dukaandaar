@@ -50,6 +50,7 @@ class OrderController extends Controller
                 'orders.order_status',
                 'orders.tax',
                 'orders.net_total',
+                'orders.customer_id',
                 'orders.created_by'
             )
             ->orderBy('orders.id', 'desc')
@@ -62,6 +63,7 @@ class OrderController extends Controller
                 'orders.net_order_value',
                 'orders.order_status',
                 'orders.tax',
+                'orders.customer_id',
                 'orders.net_total',
                 'orders.created_by',
                 DB::raw('
@@ -79,8 +81,8 @@ class OrderController extends Controller
                 ) as order_details
             ')
             );
-
         if (!empty($request->order_id)) {
+            
             $orders = $orders->where('orders.id', $request->order_id)->first();
             $organization = Organization::where('id', $org_id)->first();
             $orders->order_details = json_encode($orders->order_details);

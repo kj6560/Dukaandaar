@@ -7,7 +7,7 @@ Date       : {{ \Carbon\Carbon::parse($order->order_date)->format('d M Y H:i') }
 ----------------------------
 Org        : {{ $organization->org_name ?? 'Customer' }}
 Customer   : {{ $customer->customer_name ?? 'NA' }}
-Customer PH   : {{ $customer->customer_phone ?? 'NA' }}
+Customer PH   : {{ $customer->customer_phone_number ?? 'NA' }}
 ----------------------------
 
 @foreach ($orderDetails as $item)
