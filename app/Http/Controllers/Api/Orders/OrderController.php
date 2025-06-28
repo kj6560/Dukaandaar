@@ -23,7 +23,7 @@ class OrderController extends Controller
 {
     public function fetchOrders(Request $request)
     {
-        if($this->checkSubscription(Auth::user()->org_id) == false){
+        if ($this->checkSubscription(Auth::user()->org_id) == false) {
             return response()->json([
                 'statusCode' => 202,
                 'message' => 'You don\'t have an active subscription. Plz contact admin',
@@ -81,11 +81,11 @@ class OrderController extends Controller
 
         if (!empty($request->order_id)) {
             $orders = $orders->where('orders.id', $request->order_id)->first();
-            $organization = Organization::where('id',$org_id)->first();
+            $organization = Organization::where('id', $org_id)->first();
             $orders->order_details = json_encode($orders->order_details);
-            $currencySetting = OrgSettings::where('org_id',$organization->id)->first();
+            $currencySetting = OrgSettings::where('org_id', $organization->id)->first();
             $currencySetting = $currencySetting->set_value;
-            $currency = Currency::where('id',$currencySetting)->first();
+            $currency = Currency::where('id', $currencySetting)->first();
             $orderDetails = json_decode(json_decode($orders->order_details), true);
             // $invoiceText = "       *** INVOICE ***       \n";
             // $invoiceText .= "----------------------------\n";
@@ -123,7 +123,7 @@ class OrderController extends Controller
                 'order' => $orders,
                 'orderDetails' => $orderDetails,
                 'organization' => $organization,
-                'currency' =>$currency->symbol
+                'currency' => $currency->symbol
             ])->render();
             //$orders->print_invoice = $invoiceText;
         } else {
@@ -194,6 +194,7 @@ class OrderController extends Controller
         $net_total = 0;
 
         foreach ($request->order as $order_detail) {
+            $product_name = $order_detail['product_name'];
             if (!isset($order_detail['sku'], $order_detail['quantity'], $order_detail['tax'], $order_detail['discount'])) {
                 $errors[] = "Missing fields in order detail";
                 continue;
@@ -219,13 +220,16 @@ class OrderController extends Controller
                 continue;
             }
 
-            $productSchemes = ProductScheme::where('product_id', $product->id)->get();
-            if ($productSchemes->isNotEmpty()) {
+            $productSchemes = $order_detail['schemes'] ?? [];
+
+            if (!empty($productSchemes)) {
                 foreach ($productSchemes as $scheme) {
-                    $bundle_products = json_decode($scheme->bundle_products, true);
+                    $bundle_products = $scheme['bundle_products'] ?? [];
+
                     if (is_array($bundle_products)) {
                         foreach ($bundle_products as $bundle_product) {
-                            if (!isset($bundle_product['product_id'], $bundle_product['quantity'])) continue;
+                            if (!isset($bundle_product['product_id'], $bundle_product['quantity']))
+                                continue;
 
                             $bundleProduct = Product::find($bundle_product['product_id']);
                             $bundleInventory = Inventory::where('product_id', $bundle_product['product_id'])->first();
@@ -235,15 +239,16 @@ class OrderController extends Controller
                                 continue;
                             }
 
-                            switch ($scheme->type) {
+                            switch ($scheme['scheme_type']) {
                                 case 'combo':
                                 case 'bogs':
-                                    $_total_order_value += $product->product_mrp * $quantity + $bundleProduct->product_mrp * $bundle_product['quantity'] + $scheme->value;
-                                    $_total_order_discount += $product->product_mrp * $quantity + $bundleProduct->product_mrp * $bundle_product['quantity'];
+                                    $_total_order_value += $product->product_mrp * $quantity + $bundle_product['quantity'] * floatval($scheme['scheme_value']);
+                                    $_total_order_discount += 0;
                                     break;
+
                                 case 'fixed_discount':
                                     $_total_order_value += $product->product_mrp * $quantity;
-                                    $_total_order_discount += ($product->product_mrp * $quantity) - ($bundleProduct->product_mrp * $bundle_product['quantity']) * ($scheme->value / 100);
+                                    $_total_order_discount += ($product->product_mrp * $quantity) - ($bundleProduct->product_mrp * $bundle_product['quantity']) * (floatval($scheme['scheme_value']) / 100);
                                     break;
                             }
                         }
@@ -253,6 +258,7 @@ class OrderController extends Controller
                 $_total_order_value += $product->product_mrp * $quantity;
                 $_total_order_discount += $discount;
             }
+
 
             $total_order_value += $_total_order_value;
             $total_order_discount += $_total_order_discount;
@@ -285,7 +291,8 @@ class OrderController extends Controller
         $count = 0;
         foreach ($request->order as $order_detail) {
             $product = Product::where('sku', $order_detail['sku'])->first();
-            if (!$product) continue;
+            if (!$product)
+                continue;
 
             $orderDetail = new OrderDetails();
             $orderDetail->order_id = $order->id;
@@ -421,7 +428,7 @@ class OrderController extends Controller
         if (empty($product->id)) {
             return false;
         }
-        $mainProductInventory  = $this->saveInventory($quantity, $transaction_type, $org_id, $product->id);
+        $mainProductInventory = $this->saveInventory($quantity, $transaction_type, $org_id, $product->id);
         if ($mainProductInventory) {
             $productSchemes = ProductScheme::where('product_id', $product->id)->get();
             if ($productSchemes->isNotEmpty()) {
