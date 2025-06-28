@@ -223,6 +223,7 @@ class OrderController extends Controller
             $productSchemes = $order_detail['schemes'] ?? [];
 
             if (!empty($productSchemes)) {
+                $_total_order_discount += $discount;
                 foreach ($productSchemes as $scheme) {
                     $bundle_products = $scheme['bundle_products'] ?? [];
 

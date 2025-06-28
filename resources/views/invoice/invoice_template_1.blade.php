@@ -18,8 +18,8 @@ Net        : {{ $currency }} {{ number_format($item['net_price'], 2) }}
 ----------------------------
 @endforeach
 Order Total: {{ $currency }} {{ number_format($order->total_order_value, 2) }}
-Discount   : {{ $currency }} {{ number_format($order->total_order_discount, 2) }}
-Tax        : {{ $currency }} {{ number_format($order->tax, 2) }}
+Discount Total  : {{ $currency }} {{ number_format($order->total_order_discount, 2) }}
+Tax Total       : {{ $currency }} {{ number_format($order->tax, 2) }}
 Net Total  : {{ $currency }} {{ number_format($order->net_total, 2) }}
 
 ----------------------------
