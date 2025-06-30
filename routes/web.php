@@ -19,7 +19,19 @@ Route::get('/initiate', [PaytmController::class, 'initiate'])->name('initiate.pa
 Route::post('/payment', [PaytmController::class, 'pay'])->name('make.payment');
 Route::post('/payment/status', [PaytmController::class, 'paymentCallback'])->name('status');
 Route::get('/', [SiteController::class, 'index'])->name('frontend.index');
+Route::get('/download_apk', function () {
+    $path = 'public/uploads/fizsell.apk';
 
+    if (!Storage::exists($path)) {
+        abort(404, 'APK not found.');
+    }
+
+    $file = Storage::path($path);
+
+    return response()->download($file, 'fizsell.apk', [
+        'Content-Type' => 'application/vnd.android.package-archive',
+    ]);
+});
 Route::prefix('admin')->middleware(['auth:web', CheckSubscription::class])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/organizations', [DashboardController::class, 'listOrganizations'])->name('dashboard.listorganizations');
