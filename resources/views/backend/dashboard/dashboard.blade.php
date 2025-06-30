@@ -4,6 +4,7 @@
     <div class="content">
         <div class="container-fluid">
             <h4 class="page-title">Dashboard</h4>
+
             @if ($showSubscriptionFeatures)
                 <div class="row">
                     {{-- Dashboard Cards --}}
@@ -124,6 +125,20 @@
                                     </div>
                                 </div>
                             </a>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card card-stats card-primary">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <form action="{{ url('/upload-apk') }}" method="POST" enctype="multipart/form-data">
+                                            @csrf
+                                            <label>Upload APK:</label>
+                                            <input type="file" name="apk_file" accept=".apk" required>
+                                            <button type="submit">Upload</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     @endif
 

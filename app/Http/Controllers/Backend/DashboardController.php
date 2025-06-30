@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Models\UserFeaturePurchase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 
 class DashboardController extends Controller
@@ -146,5 +147,26 @@ class DashboardController extends Controller
         } else {
             return redirect()->back()->with('error', 'some error');
         }
+    }
+    public function uploadApk(Request $request){
+        $request->validate([
+            'apk_file' => 'required|file|mimes:apk,zip,application/octet-stream|max:51200', // max 50MB
+        ]);
+
+        $apkPath = 'public/uploads/fizsell.apk';
+        
+        if (Storage::exists($apkPath)) {
+            Storage::delete($apkPath);
+        }
+
+        $file = $request->file('apk_file');
+
+        // Store in storage/app/public/uploads/
+        $path = $file->storeAs('public/uploads', 'fizsell.apk');
+
+        return response()->json([
+            'status' => 'success',
+            'path' => Storage::url('uploads/fizsell.apk'),
+        ]);
     }
 }

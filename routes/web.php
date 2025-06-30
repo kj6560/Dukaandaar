@@ -29,6 +29,7 @@ Route::prefix('admin')->middleware(['auth:web', CheckSubscription::class])->grou
 });
 
 Route::prefix('admin')->middleware(['auth:web'])->group(function () {
+    Route::post('/upload-apk', [DashboardController::class, 'uploadApk']);
     Route::get('/subscription/purchase', [SubscriptionController::class, 'showPurchasePage'])->name('subscription.purchase');
     Route::get('/subscription/purchase/{id}', [SubscriptionController::class, 'purchase'])->name('subscription.purchase.id');
     Route::get('/subscription/payment/{id}', [SubscriptionController::class, 'payment'])->name('subscription.payment');
