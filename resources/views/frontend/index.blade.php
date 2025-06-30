@@ -55,7 +55,7 @@
             <li><a href="#"></a></li>
             <li><a href="#"></a></li>
             <li><a href="#"></a></li>
-            <li><a href="{{ asset('storage/uploads/app-release.apk') }}">Download App</a></li>
+            <li><a href="{{ asset('storage/uploads/fizsell.apk') }}">Download App</a></li>
             <li class="dropdown"><a href="#"><span></span> </a>
               <ul>
                 <li><a href="#">Dropdown 1</a></li>
