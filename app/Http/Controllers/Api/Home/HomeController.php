@@ -148,4 +148,29 @@ class HomeController extends Controller
             ->orderBy('report_year', 'asc')
             ->get();
     }
+    public function checkOrgSubscription(Request $request)
+    {
+        if (!$this->checkSubscription(Auth::user()->org_id) || empty($request->device_id)) {
+            return response()->json([
+                "message" => "Subscription Failed",
+                'error' => true,
+                'data' => []
+            ], 401);
+        }
+        $user = Auth::user();
+
+        if ($user->device_id == $request->device_id) {
+            return response()->json([
+                "message" => "Subscription Check Succeded",
+                'error' => false,
+                'data' => []
+            ], 200);
+        } else {
+            return response()->json([
+                "message" => "User Recently Logged in on another device",
+                'error' => true,
+                'data' => []
+            ], 401);
+        }
+    }
 }

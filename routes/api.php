@@ -24,6 +24,7 @@ Route::get('/logout', [AuthController::class, 'logout']);
 Route::middleware(['auth:api',Subscription::class])->group(function () {
     //Home
     Route::get('/fetchKpi', [HomeController::class, 'fetchKpi']);
+    Route::get('/checkOrgSubscription', [HomeController::class, 'checkOrgSubscription']);
     //Inventory
     Route::get('/fetchInventory', [InventoryController::class, 'list']);
     Route::post('/updateInventory', [InventoryController::class, 'updateInventory']);
