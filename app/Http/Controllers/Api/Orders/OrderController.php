@@ -127,7 +127,7 @@ class OrderController extends Controller
                 'order' => $orders,
                 'orderDetails' => $orderDetails,
                 'organization' => $organization,
-                'currency' => $currency->symbol,
+                'currency' => $currency->symbol??"",
                 'customer'=>$customer
             ])->render();
             //$orders->print_invoice = $invoiceText;
