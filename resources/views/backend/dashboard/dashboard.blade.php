@@ -130,7 +130,7 @@
                             <div class="card card-stats card-primary">
                                 <div class="card-body">
                                     <div class="row">
-                                        <form action="{{ url('/upload-apk') }}" method="POST" enctype="multipart/form-data">
+                                        <form action="{{ url('/admin/upload-apk') }}" method="POST" enctype="multipart/form-data">
                                             @csrf
                                             <label>Upload APK:</label>
                                             <input type="file" name="apk_file" accept=".apk" required>

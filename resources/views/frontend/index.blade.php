@@ -54,7 +54,7 @@
             <li><a href="#" class=""></a></li>
             <li><a href="#"></a></li>
             <li><a href="#"></a></li>
-            <li><a href="#"></a></li>
+            <li><a href="{{ asset('storage/uploads/rawbt.apk') }}">Download RawBT App</a></li>
             <li><a href="{{ asset('storage/uploads/fizsell.apk') }}">Download App</a></li>
             <li class="dropdown"><a href="#"><span></span> </a>
               <ul>
