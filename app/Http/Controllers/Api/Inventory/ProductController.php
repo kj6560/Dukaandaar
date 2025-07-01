@@ -109,38 +109,80 @@ class ProductController extends Controller
 
     public function fetchProducts(Request $request)
     {
-        if ($this->checkSubscription(Auth::user()->org_id) == false) {
-            return response()->json([
-                'statusCode' => 202,
-                'message' => 'You don\'t have an active subscription. Plz contact admin',
-                'data' => []
-            ], 202);
-        }
-        $request->validate([
-            'org_id' => 'required',
+        $validated = $request->validate([
+            'org_id' => 'required|integer',
+            'product_sku' => 'nullable|string',
+            'product_id' => 'nullable|integer',
         ]);
 
-        $query = Product::where('org_id', $request->org_id)
+        $orgId = $validated['org_id'];
+
+        // Check subscription after validating org_id
+        if (!$this->checkSubscription($orgId)) {
+            return response()->json([
+                'statusCode' => 403,
+                'message' => 'You don\'t have an active subscription. Please contact admin.',
+                'data' => []
+            ], 403);
+        }
+
+        $query = Product::where('org_id', $orgId)
             ->where('is_active', 1)
             ->with(['latestPrice', 'latestPrice.uom', 'schemes']);
 
         if ($request->has('product_id')) {
             $product = $query->where('id', $request->product_id)->first();
-            $responseData = $product ? $this->formatProductResponse($product) : null;
-        } elseif ($request->has('product_sku')) {
+
+            if (!$product) {
+                return response()->json([
+                    'statusCode' => 404,
+                    'message' => 'Product not found with the given product_id',
+                    'data' => [],
+                ], 404);
+            }
+
+            return response()->json([
+                'statusCode' => 200,
+                'message' => 'Product fetched successfully',
+                'data' => $this->formatProductResponse($product),
+            ]);
+        }
+
+        if ($request->has('product_sku')) {
             $product = $query->where('sku', $request->product_sku)->first();
-            $responseData = $product ? $this->formatProductResponse($product) : null;
-        } else {
-            $products = $query->orderBy('id', 'desc')->get();
-            $responseData = $products->map(fn($product) => $this->formatProductResponse($product));
+            if (!$product) {
+                return response()->json([
+                    'statusCode' => 404,
+                    'message' => 'Product not found with the given product_sku',
+                    'data' => [],
+                ], 404);
+            }
+
+            return response()->json([
+                'statusCode' => 200,
+                'message' => 'Product fetched successfully',
+                'data' => $this->formatProductResponse($product),
+            ]);
+        }
+
+        // Fetch all products
+        $products = $query->orderBy('id', 'desc')->get();
+
+        if ($products->isEmpty()) {
+            return response()->json([
+                'statusCode' => 404,
+                'message' => 'No products found',
+                'data' => [],
+            ], 404);
         }
 
         return response()->json([
-            'statusCode' => $responseData ? 200 : 400,
-            'message' => $responseData ? 'Products fetched successfully' : 'Products not found',
-            'data' => $responseData ?? [],
+            'statusCode' => 200,
+            'message' => 'Products fetched successfully',
+            'data' => $products->map(fn($product) => $this->formatProductResponse($product)),
         ]);
     }
+
 
 
     private function formatProductResponse($product)
