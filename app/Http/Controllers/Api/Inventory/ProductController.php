@@ -135,7 +135,7 @@ class ProductController extends Controller
 
             if (!$product) {
                 return response()->json([
-                    'statusCode' => 404,
+                    'statusCode' => 200,
                     'message' => 'Product not found with the given product_id',
                     'data' => [],
                 ], 404);
@@ -152,7 +152,7 @@ class ProductController extends Controller
             $product = $query->where('sku', $request->product_sku)->first();
             if (!$product) {
                 return response()->json([
-                    'statusCode' => 404,
+                    'statusCode' => 200,
                     'message' => 'Product not found with the given product_sku',
                     'data' => [],
                 ], 404);
@@ -170,7 +170,7 @@ class ProductController extends Controller
 
         if ($products->isEmpty()) {
             return response()->json([
-                'statusCode' => 404,
+                'statusCode' => 200,
                 'message' => 'No products found',
                 'data' => [],
             ], 404);
