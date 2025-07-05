@@ -126,7 +126,7 @@ class DashboardController extends Controller
         $org->is_active = $data['is_active'];
         if ($org->save()) {
             $user = User::where('email', $data['org_email'])->first();
-            if (empty($user)) {
+            if (empty($user->id)) {
                 $user->is_active = $data['is_active'];
                 $user->save();
             }
