@@ -125,6 +125,11 @@ class DashboardController extends Controller
         $org->org_address = $data['org_address'];
         $org->is_active = $data['is_active'];
         if ($org->save()) {
+            $user = User::where('email', $data['org_email'])->first();
+            if (empty($user)) {
+                $user->is_active = $data['is_active'];
+                $user->save();
+            }
             return redirect()->back()->with('success', "success");
         }
     }
