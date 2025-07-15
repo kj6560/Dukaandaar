@@ -87,7 +87,7 @@ class OrderController extends Controller
             $organization = Organization::where('id', $org_id)->first();
             $orders->order_details = json_encode($orders->order_details);
             $currencySetting = OrgSettings::where('org_id', $organization->id)->first();
-            $currencySetting = $currencySetting->set_value;
+            $currencySetting = !empty($currencySetting->set_value)?$currencySetting->set_value:"";
             $currency = Currency::where('id', $currencySetting)->first();
             $orderDetails = json_decode(json_decode($orders->order_details), true);
             $customer = Customer::where('id',$orders->customer_id)->first();
