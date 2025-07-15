@@ -83,7 +83,7 @@ class OrgSettingsController extends Controller
     }
     public function fetchCurrencies(Request $request)
     {
-        $currencies = Currency::where('is_active', 1)->orderBy('currency', 'asc')->get();
+        $currencies = Currency::where('is_active', 1)->orderBy('name', 'asc')->get();
         $currencySetting = OrgSettings::where('org_id', Auth::user()->org_id)->where('set_key', 'org_currency')->first();
 
         return response()->json([
