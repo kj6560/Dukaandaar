@@ -118,7 +118,7 @@ class OrgSettingsController extends Controller
                 'statusCode' => 200,
                 'message' => 'Currencies saved successfuly!',
                 'selected' => $currencySetting->set_value ?? 0,
-                'data' => Currency::where('is_active', 1)->orderBy('currency', 'asc')->get()
+                'data' => Currency::where('is_active', 1)->orderBy('name', 'asc')->get()
             ], 200);
         }
     }
