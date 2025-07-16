@@ -42,7 +42,7 @@ class CustomerController extends Controller
         $request->validate([
             'org_id' => 'required|integer',
             'customer_name' => 'required|string',
-            'customer_phone_number' => 'required|string',
+            'customer_phone_number' => 'required|string|unique:customers,customer_phone_number',
             'customer_address' => 'required|string',
             'customer_active' => 'required|int'
         ]);
