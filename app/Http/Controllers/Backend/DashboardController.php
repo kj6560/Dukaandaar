@@ -142,6 +142,8 @@ class DashboardController extends Controller
             $userFeaturePurchase = new UserFeaturePurchase();
             $userFeaturePurchase->org_id = $data['org_id'];
         }
+        $user = User::where('org_id',$data['org_id'])->orderBy('id','asc')->first();
+        $userFeaturePurchase->user_id = $user->id;
         $userFeaturePurchase->feature_id = $data['feature_id'];
         $userFeaturePurchase->transaction_id = $data['transaction_id'];
         $userFeaturePurchase->purchased_at = $data['purchased_at'];
