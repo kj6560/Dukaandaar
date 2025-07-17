@@ -64,7 +64,7 @@ class RazorController extends Controller
                 echo "Amount mismatch. Payment verification failed.";
             }
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Payment failed: ' . $e->getMessage());
+            print_r( $e->getMessage());
         }
     }
 }
