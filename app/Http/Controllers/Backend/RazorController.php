@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Organization;
+use App\Models\Transaction;
+use App\Models\UserFeaturePurchase;
 use App\Services\RazorpayService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -58,6 +60,16 @@ class RazorController extends Controller
                 if (!empty($user->id)) {
                     $user->is_active = 1;
                     $user->save();
+                    $transaction = Transaction::where('transaction_orders_id', $data['order_id'])->first();
+                    $user_feature_purchase = new UserFeaturePurchase();
+                    $user_feature_purchase->user_id = $user->id;
+                    $user_feature_purchase->org_id = $user->org_id;
+                    $user_feature_purchase->feature_id = $transaction->ref_id;
+                    $user_feature_purchase->transaction_id = $transaction->id;
+                    $user_feature_purchase->purchased_at = now();
+                    $user_feature_purchase->expires_at = now()->addMonth(); 
+                    $user_feature_purchase->expired = 0;
+                    $user_feature_purchase->save();
                     return redirect()->route('dashboard')->with('success', 'Payment successful and organization activated.');
                 }
             } else {
