@@ -113,6 +113,7 @@ class RazorPayController extends Controller
                     'data' => []
                 ], 200);
             } else {
+                
                 return response()->json([
                     'message' => "Payment saved successfuly",
                     'error' => false,
@@ -121,6 +122,11 @@ class RazorPayController extends Controller
             }
 
         } catch (\Exception $e) {
+            $data = $request->all();
+                $cronTable = new CronTable();
+                $cronTable->cron_time = now();
+                $cronTable->msg = json_encode($e->getMessage(), true);
+                $cronTable->save();
             return response()->json([
                 'message' => "Exception in saving payment",
                 'error' => $e->getMessage(),

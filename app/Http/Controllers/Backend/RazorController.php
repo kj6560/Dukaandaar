@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Organization;
 use App\Services\RazorpayService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Razorpay\Api\Api;
 
@@ -44,19 +46,25 @@ class RazorController extends Controller
     }
     public function paymentSuccess(Request $request)
     {
+        $data = $request->all();
         $api = new Api(config('razorpay.key'), config('razorpay.secret'));
+        $user = Auth::user();
+        $org = Organization::where('id', $user->org_id)->first();
 
         try {
             $razorpayOrder = $api->order->fetch($request->order_id);
-
-            if ($razorpayOrder->amount != $request->amount * 100) {
+            if (($razorpayOrder['id'] === $data['order_id']) && doubleval($razorpayOrder['amount_paid']) === doubleval($data['amount'])) {
+                $org->is_active = 1;
+                $org->save();
+                if (!empty($user->id)) {
+                    $user->is_active = $data['is_active'];
+                    $user->save();
+                }
+            } else {
                 echo "Amount mismatch. Payment verification failed.";
-            }else{
-                echo "Payment verification successful.";
             }
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Payment failed: ' . $e->getMessage());
         }
-        return response()->json(['status' => 'Payment verification failed'], 400);
     }
 }

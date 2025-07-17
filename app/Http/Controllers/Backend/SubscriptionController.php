@@ -32,10 +32,7 @@ class SubscriptionController extends Controller
         if (!$org) {
             return redirect()->back()->with('error', 'Organization not found.');
         }
-        $user_id = $user->id;
-        $org_email = $org->org_email;
-        $org_number = $org->org_number;
-        $org_address = $org->org_address;
+
         $features = SubsFeature::with('details')->where('id', $id)->first();
 
         $api = new Api(config('services.razorpay.key'), config('services.razorpay.secret'));
