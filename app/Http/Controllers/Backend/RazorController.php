@@ -58,6 +58,7 @@ class RazorController extends Controller
                 if (!empty($user->id)) {
                     $user->is_active = 1;
                     $user->save();
+                    return redirect()->route('dashboard')->with('success', 'Payment successful and organization activated.');
                 }
             } else {
                 echo "Amount mismatch. Payment verification failed.";
