@@ -12,6 +12,7 @@ use App\Models\SubsFeature;
 use App\Models\User;
 use App\Models\UserFeaturePurchase;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
@@ -20,7 +21,7 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        $org = Organization::where("id", auth()->user()->id)->first();
+        $org = Organization::where("id", Auth::user()->org_id)->first();
         $customers = Customer::where("org_id", $org->id)->count();
         $products = Product::where("org_id", $org->id)->count();
         $inventory = Inventory::where("org_id", $org->id)->count();
