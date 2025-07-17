@@ -14,16 +14,10 @@ class RazorpayService
         $this->api = new Api(config('razorpay.key'), config('razorpay.secret'));
     }
 
-    public function createOrder($amount, $currency = 'INR')
+    public function createOrder($payload)
     {
         try {
-            $order = $this->api->order->create([
-                'amount' => $amount * 100, // Amount in paise
-                'currency' => $currency,
-                'receipt' => 'order_rcpt_' . uniqid(),
-                'payment_capture' => 1,
-            ]);
-
+            $order = $this->api->order->create($payload);
             return $order;
         } catch (Exception $e) {
             return $e->getMessage();

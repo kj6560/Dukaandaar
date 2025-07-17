@@ -109,7 +109,7 @@ class DashboardController extends Controller
         $organization = Organization::where('id', $id)->first();
         $user_feature_purchases = UserFeaturePurchase::where('org_id', $id)->first();
         $subs_features = SubsFeature::all();
-        return view('backend.dashboard.org_detail', ['organization' => $organization, 'purchase' => $user_feature_purchases, 'features' => $subs_features]);
+        return view('backend.dashboard.org_detail', ['org_id'=>$id,'organization' => $organization, 'purchase' => $user_feature_purchases, 'features' => $subs_features]);
     }
     public function saveOrg(Request $request)
     {

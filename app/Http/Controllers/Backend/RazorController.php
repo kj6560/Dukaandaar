@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\RazorpayService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Razorpay\Api\Api;
 
 class RazorController extends Controller
 {protected $razorpayService;
@@ -20,7 +21,6 @@ class RazorController extends Controller
         $amount = $request->input('amount');  // Amount in INR
         $currency = $request->input('currency', 'INR');  // Default to INR
         $order = $this->razorpayService->createOrder($amount, $currency);
-        dd($order);
         return response()->json([
             'order_id' => $order['id'],
             'amount' => $order['amount'],
@@ -40,6 +40,23 @@ class RazorController extends Controller
             return response()->json(['status' => 'Payment verified']);
         }
 
+        return response()->json(['status' => 'Payment verification failed'], 400);
+    }
+    public function paymentSuccess(Request $request)
+    {
+        $api = new Api(config('razorpay.key'), config('razorpay.secret'));
+
+        try {
+            $razorpayOrder = $api->order->fetch($request->order_id);
+
+            if ($razorpayOrder->amount != $request->amount * 100) {
+                echo "Amount mismatch. Payment verification failed.";
+            }else{
+                echo "Payment verification successful.";
+            }
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Payment failed: ' . $e->getMessage());
+        }
         return response()->json(['status' => 'Payment verification failed'], 400);
     }
 }

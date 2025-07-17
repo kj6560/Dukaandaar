@@ -1,5 +1,5 @@
 <?php
 return [
-    'key' => env('RZ_TEST_KEY_ID'),
-    'secret' => env('RZ_TEST_KEY_SECRET'),
+    'key' => "rzp_test_1KE65aZtYMBPwi",
+    'secret' => "cli89ovAnas6uiXkTuqoHHA1",
 ];

@@ -18,6 +18,7 @@ Route::post('/loginRequest', [AuthController::class, 'loginRequest'])->name('bac
 Route::get('/initiate', [PaytmController::class, 'initiate'])->name('initiate.payment');
 Route::post('/payment', [PaytmController::class, 'pay'])->name('make.payment');
 Route::post('/payment/status', [PaytmController::class, 'paymentCallback'])->name('status');
+Route::post('/dashboard/razorpay/success', [RazorController::class, 'paymentSuccess'])->name('paymentSuccess')->middleware('auth:web');
 Route::get('/', [SiteController::class, 'index'])->name('frontend.index');
 Route::prefix('admin')->middleware(['auth:web', CheckSubscription::class])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -40,11 +41,11 @@ Route::prefix('admin')->middleware(['auth:web'])->group(function () {
     Route::post('/dashboard/users/toggleStatus/{user_id}/{status}', [UserController::class, 'toggleStatus'])->name('dashboard.toggleuserstatus');
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 });
-Route::middleware(['auth:web'])->group(function () {
-    Route::get('/initiate', [PaytmController::class, 'initiate'])->name('initiate.payment');
-    Route::post('/payment', [PaytmController::class, 'pay'])->name('make.payment');
-    Route::post('/payment/status', [PaytmController::class, 'paymentCallback'])->name('status');
-});
+// Route::middleware(['auth:web'])->group(function () {
+//     Route::get('/initiate', [PaytmController::class, 'initiate'])->name('initiate.payment');
+//     Route::post('/payment', [PaytmController::class, 'pay'])->name('make.payment');
+//     Route::post('/payment/status', [PaytmController::class, 'paymentCallback'])->name('status');
+// });
 Route::middleware(['auth:web'])->group(function () {
     Route::get('/razor_callback', [RazorController::class, 'razor_callback'])->name('razor_callback');
     Route::post('/create-order', [RazorController::class, 'createOrder'])->name('create.order');

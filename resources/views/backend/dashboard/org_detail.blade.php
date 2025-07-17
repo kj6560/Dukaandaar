@@ -71,7 +71,7 @@
                         <div class="mb-3">
                             <label for="org_id" class="form-label">Organization ID</label>
                             <input type="number" class="form-control" id="org_id" name="org_id"
-                                value="<?= htmlspecialchars($purchase->org_id ?? '') ?>" required>
+                                value="<?= htmlspecialchars($org_id ?? '') ?>" required>
                         </div>
 
                         <!-- feature_id -->
