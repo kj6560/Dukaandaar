@@ -50,17 +50,13 @@ class RazorController extends Controller
         $api = new Api(config('razorpay.key'), config('razorpay.secret'));
         $user = Auth::user();
         $org = Organization::where('id', $user->org_id)->first();
-        if (empty($org->id)) {
-            print_r($org);
-            return response()->json(['message' => 'Organization not found'], 404);
-        }
         try {
             $razorpayOrder = $api->order->fetch($request->order_id);
             if (($razorpayOrder['id'] === $data['order_id']) && doubleval($razorpayOrder['amount_paid']) === doubleval($data['amount'])) {
                 $org->is_active = 1;
                 $org->save();
                 if (!empty($user->id)) {
-                    $user->is_active = $data['is_active'];
+                    $user->is_active = 1;
                     $user->save();
                 }
             } else {
