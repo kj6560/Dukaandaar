@@ -22,7 +22,7 @@ Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::get('/registerOrg', [OrgController::class, 'register']);
 Route::get('/registerUser', [AuthController::class, 'register']);
 Route::get('/logout', [AuthController::class, 'logout']);
-Route::post('/razorHook',[RazorPayController::class,'paymentWebhook'])->name('razorpay.payment');
+Route::post('/razorCallback',[RazorPayController::class,'paymentWebhook'])->name('razorpay.payment');
 Route::post('/createOrder',[RazorPayController::class,'createMentorRequestOrder'])->name('razorpay.createOrder');
 Route::get('/verifyPayment',[RazorPayController::class,'verifyPayment'])->name('razorpay.verifyPayment');
 Route::middleware(['auth:api',Subscription::class])->group(function () {
