@@ -42,7 +42,6 @@ class CustomerController extends Controller
         $request->validate([
             'org_id' => 'required|integer',
             'customer_name' => 'required|string',
-            'customer_phone_number' => 'required|string|unique:customers,customer_phone_number',
             'customer_address' => 'required|string',
             'customer_active' => 'required|int'
         ]);
@@ -58,7 +57,13 @@ class CustomerController extends Controller
                 'message' => 'Customer not found',
             ], 404);
         }
-
+        $numberExists = Customer::where('customer_phone_number',$request->customer_phone_number)->exists();
+        if($numberExists && empty($request->customer_id)){
+            return response()->json([
+                'statusCode' => 422,
+                'message' => 'Customer already exists with this number',
+            ], 422);
+        }
         // Assign values
         $customer->customer_name = $request->customer_name;
         $customer->customer_phone_number = $request->customer_phone_number;
